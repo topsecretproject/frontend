@@ -1,0 +1,23 @@
+import React from "react";
+import { doc, getDoc } from "@firebase/firestore";
+import { useState, useEffect } from "react";
+import db from "../firebase/firebase";
+
+export default function Seniors() {
+  const [seniors, setSeniors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async () => {
+    const docRef = doc(db, "students", "seniors");
+    const snapshot = await getDoc(docRef);
+    const data = snapshot.data();
+    setSeniors(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return <div>Seniors</div>;
+}
