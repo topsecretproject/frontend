@@ -1,12 +1,13 @@
 .admin {
-  background: #ee9ca7;
-  background: -webkit-linear-gradient(to top, #ffdde1, #ee9ca7);
-  background: linear-gradient(to top, #ffdde1, #ee9ca7);
+  background: #2b5876;
+  background: -webkit-linear-gradient(to top, #4e4376, #2b5876);
+  background: linear-gradient(to top, #4e4376, #2b5876);
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow-y: hidden;
 }
 
 .form {

@@ -29,6 +29,12 @@ export default function Admin() {
 
   const [queues, setQueues] = useState([]);
 
+  const [expanded, setExpanded] = useState("");
+
+  const handleExpand = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
+
   const handleEmail = (event) => {
     setInputs({ ...inputs, email: event.target.value });
   };
@@ -91,33 +97,37 @@ export default function Admin() {
     <Fragment>
       <Box className="admin">
         {isAuthenticated === false ? (
-          <FormGroup noValidate autoComplete="off" className="form">
-            <FormControl variant="standard" sx={{ width: "50vw", m: 0.5 }}>
-              <TextField
-                variant="filled"
-                type="email"
-                required
-                onChange={handleEmail}
-                id="email"
-                label="Email"
-                aria-describedby="enter email"
-              />
-            </FormControl>
-            <FormControl variant="standard" sx={{ width: "50vw", m: 0.5 }}>
-              <TextField
-                variant="filled"
-                required
-                type="password"
-                onChange={handlePass}
-                id="password"
-                label="Password"
-                aria-describedby="enter password"
-              />
-            </FormControl>
-            <Button variant="contained" onClick={authenticate}>
-              Login
-            </Button>
-          </FormGroup>
+          <Box component="form">
+            <FormGroup className="form">
+              <FormControl variant="standard" sx={{ width: "50vw", m: 0.5 }}>
+                <TextField
+                  autoComplete="email"
+                  variant="filled"
+                  type="email"
+                  required
+                  onChange={handleEmail}
+                  id="email"
+                  label="Email"
+                  aria-describedby="enter email"
+                />
+              </FormControl>
+              <FormControl variant="standard" sx={{ width: "50vw", m: 0.5 }}>
+                <TextField
+                  autoComplete="current-password"
+                  variant="filled"
+                  required
+                  type="password"
+                  onChange={handlePass}
+                  id="password"
+                  label="Password"
+                  aria-describedby="enter password"
+                />
+              </FormControl>
+              <Button variant="contained" onClick={authenticate}>
+                Login
+              </Button>
+            </FormGroup>
+          </Box>
         ) : isLoading === true ? (
           <Box sx={{ width: "100%", height: "100%" }}>
             <Loading />
@@ -140,11 +150,18 @@ export default function Admin() {
                   height: "85%",
                   overflow: "scroll",
                   backgroundColor: "white",
+                  borderRadius: "10px",
                 }}
               >
                 {queues.students?.map((queue, index) => (
                   <Queue
+                    expanded={expanded}
+                    handleExpand={handleExpand}
                     key={index}
+                    id={index}
+                    linkedin={queue.linkedin}
+                    portfolio={queue.portfolio}
+                    github={queue.github}
                     emplid={queue.emplid}
                     name={queue.name}
                     bio={queue.bio}
