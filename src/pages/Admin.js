@@ -1,5 +1,12 @@
 import { useState, Fragment, useEffect } from "react";
-import { FormControl, TextField, Button, FormGroup, Box } from "@mui/material";
+import {
+  FormControl,
+  TextField,
+  Button,
+  FormGroup,
+  Box,
+  Alert,
+} from "@mui/material";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -126,6 +133,9 @@ export default function Admin() {
               <Button variant="contained" onClick={authenticate}>
                 Login
               </Button>
+              {errors ? (
+                <Alert severity="error">Incorrect Email or Password!</Alert>
+              ) : undefined}
             </FormGroup>
           </Box>
         ) : isLoading === true ? (
@@ -159,6 +169,7 @@ export default function Admin() {
                     handleExpand={handleExpand}
                     key={index}
                     id={index}
+                    csiEmail={queue.csiEmail}
                     linkedin={queue.linkedin}
                     portfolio={queue.portfolio}
                     github={queue.github}

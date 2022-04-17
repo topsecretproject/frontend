@@ -1,7 +1,8 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { doc, getDoc } from "@firebase/firestore";
 import { useState, useEffect } from "react";
 import db from "../firebase/firebase";
+import Header from "../components/Header";
 
 export default function Seniors() {
   const [seniors, setSeniors] = useState([]);
@@ -19,5 +20,9 @@ export default function Seniors() {
     fetchData();
   }, []);
 
-  return <div>Seniors</div>;
+  return (
+    <Fragment>
+      <Header />
+    </Fragment>
+  );
 }

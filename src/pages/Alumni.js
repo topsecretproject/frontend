@@ -1,5 +1,10 @@
-import React from "react";
+import React, { Fragment } from "react";
+import Header from "../components/Header";
 
 export default function Alumni() {
-  return <div>Alumni</div>;
+  return (
+    <Fragment>
+      <Header />
+    </Fragment>
+  );
 }

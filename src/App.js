@@ -4,6 +4,7 @@ import Student from "./pages/Student";
 import Juniors from "./pages/Juniors";
 import Admin from "./pages/Admin";
 import Alumni from "./pages/Alumni";
+import Form from "./pages/Form";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/student/:id" element={<Student />}></Route>
         <Route path="/juniors" element={<Juniors />}></Route>
         <Route path="/alumni" element={<Alumni />}></Route>
+        <Route path="/form" element={<Form />}></Route>
         <Route path="/admin" element={<Admin />}></Route>
         <Route path="*" element={<Seniors />}></Route>
       </Routes>

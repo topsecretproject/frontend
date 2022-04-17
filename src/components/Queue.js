@@ -5,21 +5,42 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionActions from "@mui/material/AccordionActions";
 import Card from "@mui/material/Card";
+import Modal from "@mui/material/Modal";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import LinkIcon from "@mui/icons-material/Link";
 import PersonIcon from "@mui/icons-material/Person";
+import TagFacesIcon from "@mui/icons-material/TagFaces";
+import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
+import StarIcon from "@mui/icons-material/Star";
+import EngineeringIcon from "@mui/icons-material/Engineering";
+import SettingsIcon from "@mui/icons-material/Settings";
+import InfoIcon from "@mui/icons-material/Info";
 import { styled } from "@mui/material/styles";
-import { Button, Chip, Grid, Avatar, Paper } from "@mui/material";
+import { Button, Chip, Grid, Avatar, Paper, Box } from "@mui/material";
 
 const ListItem = styled("li")(({ theme }) => ({
   margin: theme.spacing(0.5),
 }));
 
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
+
 export default function Queue({
+  csiEmail,
   portfolio,
   expanded,
   handleExpand,
@@ -35,6 +56,9 @@ export default function Queue({
   linkedin,
   github,
 }) {
+  const [open, setOpen] = React.useState(false);
+  const handlePromptOpen = () => setOpen(true);
+  const handlePromptClose = () => setOpen(false);
   return (
     <Accordion
       expanded={expanded === `panel${id}`}
@@ -53,7 +77,12 @@ export default function Queue({
       <AccordionDetails>
         <Grid container sx={{ mb: 2 }}>
           <Grid item xs={3} sm={2} md={1}>
-            <Chip label="Image" color="primary" sx={{ mr: 2 }} />
+            <Chip
+              icon={<TagFacesIcon />}
+              label="Image"
+              color="primary"
+              sx={{ mr: 2 }}
+            />
           </Grid>
           <Grid item xs={9} sm={10} md={11}>
             <Avatar sx={{ width: 200, height: 200 }} src={imgLink} />
@@ -61,7 +90,12 @@ export default function Queue({
         </Grid>
         <Grid container sx={{ mb: 2 }}>
           <Grid item xs={3} sm={2} md={1}>
-            <Chip label="Links" color="info" sx={{ mr: 2 }} />
+            <Chip
+              icon={<LinkIcon />}
+              label="Links"
+              color="info"
+              sx={{ mr: 2 }}
+            />
           </Grid>
           <Grid item xs={9} sm={10} md={11}>
             <Paper
@@ -85,6 +119,7 @@ export default function Queue({
                   clickable
                   icon={<LinkedInIcon />}
                   label="LinkedIn"
+                  disabled={!linkedin}
                 />
               </ListItem>
               <ListItem>
@@ -96,6 +131,7 @@ export default function Queue({
                   clickable
                   icon={<GitHubIcon />}
                   label="GitHub"
+                  disabled={!github}
                 />
               </ListItem>
               <ListItem>
@@ -107,6 +143,7 @@ export default function Queue({
                   clickable
                   icon={<PersonIcon />}
                   label="Portfolio"
+                  disabled={!portfolio}
                 />
               </ListItem>
             </Paper>
@@ -114,7 +151,25 @@ export default function Queue({
         </Grid>
         <Grid container sx={{ mb: 2 }}>
           <Grid item xs={3} sm={2} md={1}>
-            <Chip label="Bio" color="success" sx={{ mr: 2 }} />
+            <Chip
+              icon={<AlternateEmailIcon />}
+              label="Email"
+              color="success"
+              sx={{ mr: 2 }}
+            />
+          </Grid>
+          <Grid item xs={9} sm={10} md={11}>
+            <Typography>{csiEmail}</Typography>
+          </Grid>
+        </Grid>
+        <Grid container sx={{ mb: 2 }}>
+          <Grid item xs={3} sm={2} md={1}>
+            <Chip
+              icon={<InfoIcon />}
+              label="Bio"
+              color="success"
+              sx={{ mr: 2 }}
+            />
           </Grid>
           <Grid item xs={9} sm={10} md={11}>
             <Typography>{bio}</Typography>
@@ -122,12 +177,17 @@ export default function Queue({
         </Grid>
         <Grid container sx={{ mb: 2 }}>
           <Grid item xs={3} sm={2} md={1}>
-            <Chip label="Projects" color="warning" sx={{ mr: 2 }} />
+            <Chip
+              icon={<EngineeringIcon />}
+              label="Projects"
+              color="warning"
+              sx={{ mr: 2 }}
+            />
           </Grid>
           <Grid item xs={9} sm={10} md={11}>
             <Grid container spacing={2}>
               {projects?.map((project, index) => (
-                <Grid item xs={12} sm={12} md={3} lg={3}>
+                <Grid key={index} item xs={12} sm={12} md={3} lg={3}>
                   <Card>
                     <CardContent>
                       <Typography sx={{ fontSize: 18 }} gutterBottom>
@@ -136,6 +196,7 @@ export default function Queue({
                     </CardContent>
                     <CardActions>
                       <Button
+                        disabled={!project.projectLink}
                         rel="noopener noreferrer"
                         target="_blank"
                         component="a"
@@ -163,7 +224,12 @@ export default function Queue({
         </Grid>
         <Grid container sx={{ mb: 2 }}>
           <Grid item xs={3} sm={2} md={1}>
-            <Chip label="Skills" color="error" sx={{ mr: 2 }} />
+            <Chip
+              icon={<SettingsIcon />}
+              label="Skills"
+              color="error"
+              sx={{ mr: 2 }}
+            />
           </Grid>
           <Grid item xs={9} sm={10} md={11}>
             <Paper
@@ -188,7 +254,12 @@ export default function Queue({
         </Grid>
         <Grid container sx={{ mb: 2 }}>
           <Grid item xs={3} sm={2} md={1}>
-            <Chip label="Interests" color="error" sx={{ mr: 2 }} />
+            <Chip
+              icon={<StarIcon />}
+              label="Interests"
+              color="error"
+              sx={{ mr: 2 }}
+            />
           </Grid>
           <Grid item xs={9} sm={10} md={11}>
             <Paper
@@ -216,15 +287,45 @@ export default function Queue({
         <Button variant="contained" color="success">
           Approve
         </Button>
-        <Button variant="outlined" color="error">
+        <Button
+          sx={{ ml: 1 }}
+          component="a"
+          target="_blank"
+          href={`mailto:${csiEmail}`}
+          variant="contained"
+          color="primary"
+        >
+          Feedback
+        </Button>
+        <Button onClick={handlePromptOpen} variant="outlined" color="error">
           Decline
         </Button>
+        <Modal
+          keepMounted
+          open={open}
+          onClose={handlePromptClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Are you sure you want to decline this student?
+            </Typography>
+            <Button varaint="contained" color="error">
+              Yes
+            </Button>
+            <Button varaint="contained" color="success">
+              No
+            </Button>
+          </Box>
+        </Modal>
       </AccordionActions>
     </Accordion>
   );
 }
 
 Queue.propTypes = {
+  csiEmail: PropTypes.string.isRequired,
   portfolio: PropTypes.string.isRequired,
   linkedin: PropTypes.string.isRequired,
   github: PropTypes.string.isRequired,
@@ -237,6 +338,6 @@ Queue.propTypes = {
   emplid: PropTypes.string.isRequired,
   imgLink: PropTypes.string.isRequired,
   skills: PropTypes.array.isRequired,
-  projects: PropTypes.object.isRequired,
+  projects: PropTypes.array.isRequired,
   interests: PropTypes.array.isRequired,
 };
