@@ -12,8 +12,8 @@ function App() {
         <Route path="/seniors" element={<Seniors />}></Route>
         <Route path="/student/:id" element={<Student />}></Route>
         <Route path="/juniors" element={<Juniors />}></Route>
-        <Route path="/admin" element={<Admin />}></Route>
         <Route path="/alumni" element={<Alumni />}></Route>
+        <Route path="/admin" element={<Admin />}></Route>
         <Route path="*" element={<Seniors />}></Route>
       </Routes>
     </BrowserRouter>
