@@ -86,6 +86,7 @@ export default function Admin() {
     signInWithEmailAndPassword(auth, inputs.email, inputs.password)
       // eslint-disable-next-line
       .then((userCredential) => {
+        setErrors({});
         setIsAuthenticated(true);
       })
       .catch((error) => {
@@ -106,7 +107,7 @@ export default function Admin() {
         {isAuthenticated === false ? (
           <Box component="form">
             <FormGroup className="form">
-              <FormControl variant="standard" sx={{ width: "50vw", m: 0.5 }}>
+              <FormControl variant="standard" sx={{ width: "100%", m: 0.5 }}>
                 <TextField
                   autoComplete="email"
                   variant="filled"
@@ -118,7 +119,7 @@ export default function Admin() {
                   aria-describedby="enter email"
                 />
               </FormControl>
-              <FormControl variant="standard" sx={{ width: "50vw", m: 0.5 }}>
+              <FormControl variant="standard" sx={{ width: "100%", m: 0.5 }}>
                 <TextField
                   autoComplete="current-password"
                   variant="filled"
@@ -133,7 +134,7 @@ export default function Admin() {
               <Button variant="contained" onClick={authenticate}>
                 Login
               </Button>
-              {errors ? (
+              {Object.keys(errors).length > 0 ? (
                 <Alert severity="error">Incorrect Email or Password!</Alert>
               ) : undefined}
             </FormGroup>
@@ -156,7 +157,6 @@ export default function Admin() {
               <Box
                 sx={{
                   width: "90%",
-                  mt: "15px",
                   height: "85%",
                   overflow: "scroll",
                   backgroundColor: "white",

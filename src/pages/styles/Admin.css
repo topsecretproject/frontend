@@ -1,4 +1,5 @@
 .admin {
+  position: relative;
   background: #2b5876;
   background: -webkit-linear-gradient(to top, #4e4376, #2b5876);
   background: linear-gradient(to top, #4e4376, #2b5876);
@@ -11,6 +12,7 @@
 }
 
 .form {
+  width: 70%;
   padding: 50px;
   background: rgba(255, 255, 255, 0.25);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
