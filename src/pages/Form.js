@@ -15,6 +15,7 @@ import Loading from "../components/Loading";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import ChipSelect from "../components/ChipSelect";
 
 export default function Form() {
   const textInput = useRef(null);
@@ -40,39 +41,58 @@ export default function Form() {
   const [questions, setQuestions] = useState([
     {
       question: "What is your first and last name?",
+      helper: "Please enter your name in the format of 'Firstname Lastname'",
       func: setName,
     },
     {
       question: "What is your CSI email?",
+      helper: "Please enter your CSI email",
       func: setCsiEmail,
     },
     {
       question: "What is your Emplid?",
+      helper: "Please enter your 9 digit Emplid",
       func: setEmplid,
     },
     {
       question: "What is your level?",
+      helper: "",
       func: setLevel,
     },
     {
       question: "What is your bio?",
+      helper: "Must be minimum of 500 charaters long.",
       func: setBio,
     },
     {
       question: "What is your Github Profile Link?",
+      helper: "Please enter a valid Github Profile Link",
       func: setGithub,
     },
     {
       question: "What is your LinkedIn Profile Link?",
+      helper: "Please enter a valid LinkedIn Profile Link",
       func: setLinkedin,
     },
     {
-      question: "What is your Portfolio Link?",
+      question: "What is your Portfolio Link? (Optional)",
+      helper: "Please enter a valid Portfolio Link",
       func: setPortfolio,
     },
     {
       question: "Link to a headshot image",
+      helper: "Check if the image looks good!",
       func: setImgLink,
+    },
+    {
+      question: "What are your interests? Please select all that apply.",
+      helper: "Select as many as possible",
+      func: setInterests,
+    },
+    {
+      question: "What are your skills? Please select all that apply.",
+      helper: "Select as many as possible",
+      func: setSkills,
     },
   ]);
 
@@ -84,7 +104,7 @@ export default function Form() {
         setErrors("Name is required");
         return;
       }
-      if (!/^[a-zA-Z]+ [a-zA-Z]+$/.test(name)) {
+      if (!/^[A-Z][a-z]+ [A-Z][a-z]+$/.test(name)) {
         setErrors("Name must be in the format of First Last");
         return;
       }
@@ -94,12 +114,13 @@ export default function Form() {
         setErrors("CSI Email is required");
         return;
       }
-      if (!/^[a-zA-Z0-9._-]+@cix.csi.cuny.edu$/.test(csiEmail)) {
+      if (!/^[a-zA-Z]+.[a-zA-Z0-9]+@cix.csi.cuny.edu$/.test(csiEmail)) {
         setErrors(
           "CSI Email must be in the format of first.last@cix.csi.cuny.edu"
         );
         return;
       }
+      setCsiEmail(csiEmail.toLowerCase());
     }
     if (currentQuestion === 2) {
       if (emplid === "") {
@@ -107,7 +128,7 @@ export default function Form() {
         return;
       }
       if (!/^[0-9]{9}$/.test(emplid)) {
-        setErrors("Emplid must be 9 digits");
+        setErrors("Emplid must be 9 digits only");
         return;
       }
     }
@@ -128,15 +149,12 @@ export default function Form() {
       }
     }
     if (currentQuestion === 5) {
+      const regex = new RegExp("https://github.com/[^/]+");
       if (github === "") {
         setErrors("Github is required");
         return;
       }
-      if (
-        /^(http(s?):\/\/)?(www\.)?github\.([a-z])+\/([A-Za-z0-9]{1,})+\/?$ /i.test(
-          github
-        )
-      ) {
+      if (!regex.test(github)) {
         setErrors("Github must be a valid link");
         return;
       }
@@ -146,11 +164,24 @@ export default function Form() {
         setErrors("LinkedIn is required");
         return;
       }
+      if (
+        !/(https):\/\/?(?:www\.)?linkedin.com(\w+:{0,1}\w*@)?(\S+)(:([0-9])+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/.test(
+          linkedin
+        )
+      ) {
+        setErrors("LinkedIn must be a valid link");
+        return;
+      }
     }
     if (currentQuestion === 7) {
+      const regex = new RegExp(
+        "^((ftp|http|https)://)?(www.)?(?!.*(ftp|http|https|www.))[a-zA-Z0-9_-]+(.[a-zA-Z]+)+((/)[w#]+)*(/w+?[a-zA-Z0-9_]+=w+(&[a-zA-Z0-9_]+=w+)*)?$"
+      );
       if (portfolio === "") {
-        setErrors("Portfolio is required");
-        return;
+        if (!regex.test(portfolio)) {
+          setErrors("Portfolio must be a valid link");
+          return;
+        }
       }
     }
     if (currentQuestion === 8) {
@@ -159,14 +190,6 @@ export default function Form() {
         return;
       }
     }
-    // if (currentQuestion === 4) {
-    //   if (skills.length === 0) {
-    //     setErrors({ ...errors, skills: "Skills are required" });
-    //   }
-    //   if (interests.length === 0) {
-    //     setErrors({ ...errors, interests: "Interests are required" });
-    //   }
-    // }
     // if (currentQuestion === 5) {
     //   if (Object.keys(projects).length === 0) {
     //     setErrors({ ...errors, projects: "Projects are required" });
@@ -232,6 +255,24 @@ export default function Form() {
                     <MenuItem value={"Alumni"}>Alumni</MenuItem>
                   </Select>
                 </Fragment>
+              ) : currentQuestion === 9 ? (
+                <Fragment>
+                  <ChipSelect
+                    question={questions[currentQuestion].question}
+                    helper={questions[currentQuestion].helper}
+                    variable={interests}
+                    func={setInterests}
+                  />
+                </Fragment>
+              ) : currentQuestion === 10 ? (
+                <Fragment>
+                  <ChipSelect
+                    question={questions[currentQuestion].question}
+                    helper={questions[currentQuestion].helper}
+                    variable={interests}
+                    func={setInterests}
+                  />
+                </Fragment>
               ) : (
                 <Fragment>
                   {imgLink !== "" ? (
@@ -240,6 +281,8 @@ export default function Form() {
                     </Box>
                   ) : undefined}
                   <TextField
+                    autoFocus
+                    InputLabelProps={{ shrink: true }}
                     error={errors !== ""}
                     inputRef={textInput}
                     multiline={currentQuestion === 4}
@@ -248,11 +291,9 @@ export default function Form() {
                       questions[currentQuestion].func(e.target.value)
                     }
                   />
-                  {currentQuestion === 4 ? (
-                    <FormHelperText id="my-helper-text">
-                      Must be minimum of 500 charaters long.
-                    </FormHelperText>
-                  ) : undefined}
+                  <FormHelperText sx={{ mb: 1 }} id="my-helper-text">
+                    {questions[currentQuestion].helper}
+                  </FormHelperText>
                 </Fragment>
               )}
             </FormControl>

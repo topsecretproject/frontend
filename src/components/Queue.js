@@ -326,7 +326,7 @@ export default function Queue({
 
 Queue.propTypes = {
   csiEmail: PropTypes.string.isRequired,
-  portfolio: PropTypes.string.isRequired,
+  portfolio: PropTypes.string,
   linkedin: PropTypes.string.isRequired,
   github: PropTypes.string.isRequired,
   expanded: PropTypes.string.isRequired,
