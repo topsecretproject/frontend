@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import OutlinedInput from "@mui/material/OutlinedInput";
@@ -32,7 +32,6 @@ const skills = [
   "MongoDB",
   "Python",
   "Django",
-  "PostgreSQL",
   "SQL",
   "Git",
   "GitHub",
@@ -89,8 +88,24 @@ function getStyles(interest, variable, theme) {
   };
 }
 
-export default function ChipSelect({ variable, func, question, helper }) {
+export default function ChipSelect({
+  variable,
+  func,
+  question,
+  helper,
+  index,
+}) {
   const theme = useTheme();
+
+  const [options, setOptions] = useState(index === 9 ? interests : skills);
+
+  useEffect(() => {
+    if (index === 9) {
+      setOptions(interests);
+    } else {
+      setOptions(skills);
+    }
+  }, [index]);
 
   const handleChange = (event) => {
     const {
@@ -113,12 +128,12 @@ export default function ChipSelect({ variable, func, question, helper }) {
         <InputLabel id="multiple-chip-label">{question}</InputLabel>
         <Select
           sx={{ width: "100%" }}
+          input={<OutlinedInput id="select-multiple-chip" label={question} />}
           labelId="multiple-chip-label"
           id="multiple-chip"
           multiple
           value={variable}
           onChange={handleChange}
-          input={<OutlinedInput id="select-multiple-chip" label={question} />}
           renderValue={(selected) => (
             <Box
               sx={{
@@ -142,13 +157,13 @@ export default function ChipSelect({ variable, func, question, helper }) {
           )}
           MenuProps={MenuProps}
         >
-          {interests.map((interest) => (
+          {options.map((option) => (
             <MenuItem
-              key={interest}
-              value={interest}
-              style={getStyles(interest, variable, theme)}
+              key={option}
+              value={option}
+              style={getStyles(option, variable, theme)}
             >
-              {interest}
+              {option}
             </MenuItem>
           ))}
         </Select>
