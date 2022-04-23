@@ -109,7 +109,7 @@ export default function Header({ signOut }) {
           <Button component={Link} to="/juniors" color="inherit">
             Juniors
           </Button>
-          <Button component={Link} to="/juniors" color="inherit">
+          <Button component={Link} to="/alumni" color="inherit">
             Alumni
           </Button>
           {location.pathname.split("/")[1] === "admin" ? (

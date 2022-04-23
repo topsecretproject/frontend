@@ -6,6 +6,8 @@ import {
   FormGroup,
   Box,
   Alert,
+  Typography,
+  CircularProgress,
 } from "@mui/material";
 import {
   getAuth,
@@ -21,7 +23,6 @@ import {
   arrayRemove,
 } from "@firebase/firestore";
 import db from "../firebase/firebase";
-import Loading from "../components/Loading";
 import "./styles/Admin.css";
 import Header from "../components/Header";
 import Queue from "../components/Queue";
@@ -101,11 +102,12 @@ export default function Admin() {
   };
 
   const fetchQueue = async () => {
+    setLoading(true);
     const docRef = doc(db, "queue", "students");
     const snapshot = await getDoc(docRef);
     const data = snapshot.data();
-    setLoading(false);
     setQueues(data);
+    setLoading(false);
   };
 
   onAuthStateChanged(auth, (user) => {
@@ -179,10 +181,6 @@ export default function Admin() {
               ) : undefined}
             </FormGroup>
           </Box>
-        ) : isLoading === true ? (
-          <Box sx={{ width: "100%", height: "100%" }}>
-            <Loading />
-          </Box>
         ) : (
           <Box sx={{ width: "100%", height: "100%" }}>
             <Header signOut={signOutAuth} />
@@ -203,28 +201,51 @@ export default function Admin() {
                   borderRadius: "10px",
                 }}
               >
-                {queues.students?.map((queue, index) => (
-                  <Queue
-                    expanded={expanded}
-                    onApprove={onApprove}
-                    onDecline={onDecline}
-                    handleExpand={handleExpand}
-                    key={index}
-                    id={index}
-                    csiEmail={queue.csiEmail}
-                    linkedin={queue.linkedin}
-                    portfolio={queue.portfolio}
-                    github={queue.github}
-                    emplid={queue.emplid}
-                    name={queue.name}
-                    bio={queue.bio}
-                    imgLink={queue.imgLink}
-                    level={queue.level}
-                    projects={queue.projects}
-                    skills={queue.skills}
-                    interests={queue.interests}
-                  />
-                ))}
+                {isLoading === true ? (
+                  <CircularProgress />
+                ) : (
+                  <Fragment>
+                    {queues.students.length === 0 ? (
+                      <Box
+                        sx={{
+                          marginTop: "10px",
+                          display: "flex",
+                          justifyContent: "center",
+                          textAlign: "center",
+                        }}
+                      >
+                        <Typography variant="h5" gutterBottom>
+                          No Students in Queue
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <Fragment>
+                        {queues.students?.map((queue, index) => (
+                          <Queue
+                            expanded={expanded}
+                            onApprove={onApprove}
+                            onDecline={onDecline}
+                            handleExpand={handleExpand}
+                            key={index}
+                            id={index}
+                            csiEmail={queue.csiEmail}
+                            linkedin={queue.linkedin}
+                            portfolio={queue.portfolio}
+                            github={queue.github}
+                            emplid={queue.emplid}
+                            name={queue.name}
+                            bio={queue.bio}
+                            imgLink={queue.imgLink}
+                            level={queue.level}
+                            projects={queue.projects}
+                            skills={queue.skills}
+                            interests={queue.interests}
+                          />
+                        ))}
+                      </Fragment>
+                    )}
+                  </Fragment>
+                )}
               </Box>
             </Box>
           </Box>
