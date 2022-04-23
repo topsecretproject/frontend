@@ -11,8 +11,8 @@ import {
   Paper,
   Avatar,
   Alert,
+  CircularProgress,
 } from "@mui/material";
-import Loading from "../components/Loading";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -21,11 +21,18 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import MobileStepper from "@mui/material/MobileStepper";
 import { useTheme } from "@mui/material/styles";
+import ReCAPTCHA from "react-google-recaptcha";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import db from "../firebase/firebase";
+import { useNavigate } from "react-router-dom";
 
 export default function Form() {
+  const navigate = useNavigate();
+
   const textInput = useRef(null);
   const theme = useTheme();
 
+  const [recaptcha, setCaptcha] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(-1);
   const [csiEmail, setCsiEmail] = useState("");
   const [name, setName] = useState("");
@@ -38,11 +45,30 @@ export default function Form() {
   const [level, setLevel] = useState("");
   const [skills, setSkills] = useState([]);
   const [interests, setInterests] = useState([]);
-  const [projects, setProjects] = useState({});
+  const [projects, setProjects] = useState([
+    {
+      name: "",
+      isDeployed: false,
+      deployedLink: "",
+      projectLink: "",
+    },
+    {
+      name: "",
+      isDeployed: false,
+      deployedLink: "",
+      projectLink: "",
+    },
+    {
+      name: "",
+      isDeployed: false,
+      deployedLink: "",
+      projectLink: "",
+    },
+  ]);
 
   const [errors, setErrors] = useState("");
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   // eslint-disable-next-line no-unused-vars
   const [questions, setQuestions] = useState([
@@ -61,19 +87,19 @@ export default function Form() {
     {
       label: "Emplid",
       question: "What is your Emplid?",
-      helper: "Please enter your 9 digit Emplid",
+      helper: "Please enter your 8 digit Emplid",
       func: setEmplid,
     },
     {
       label: "Academic Year",
       question: "What is your level?",
-      helper: "",
+      helper: "Please select your Academic Year",
       func: setLevel,
     },
     {
       label: "Bio",
       question: "What is your bio?",
-      helper: "Must be minimum of 500 charaters long.",
+      helper: "Must be minimum of 300 charaters long.",
       func: setBio,
     },
     {
@@ -124,6 +150,16 @@ export default function Form() {
     },
   ]);
 
+  const onRecaptchaChange = (value) => {
+    if (value) {
+      setCaptcha(true);
+    }
+  };
+
+  function onError() {
+    setCaptcha(false);
+  }
+
   const onNext = useCallback(() => {
     setIsLoading(true);
     if (currentQuestion === -1) {
@@ -159,8 +195,8 @@ export default function Form() {
     if (currentQuestion === 2) {
       if (emplid === "") {
         setErrors("Emplid is required");
-      } else if (!/^[0-9]{9}$/.test(emplid)) {
-        setErrors("Emplid must be 9 digits only");
+      } else if (!/^[0-9]{8}$/.test(emplid)) {
+        setErrors("Emplid must be 8 digits only");
       } else {
         setErrors("");
         setCurrentQuestion(currentQuestion + 1);
@@ -177,8 +213,8 @@ export default function Form() {
     if (currentQuestion === 4) {
       if (bio === "") {
         setErrors("Bio is required");
-      } else if (bio.length > 500) {
-        setErrors("Bio must be less than 500 characters");
+      } else if (bio.length < 300) {
+        setErrors("Bio must be a minimum of 300 characters");
       } else {
         setErrors("");
         setCurrentQuestion(currentQuestion + 1);
@@ -248,18 +284,34 @@ export default function Form() {
       }
     }
     if (currentQuestion === 11) {
-      if (Object.keys(projects).length === 0) {
-        setErrors({ ...errors, projects: "Projects are required" });
+      if (
+        !projects[0].name ||
+        !projects[1].name ||
+        (!projects[2].name && level !== "Junior") ||
+        !projects[0].projectLink ||
+        !projects[1].projectLink ||
+        (!projects[2].projectLink && level !== "Junior")
+      ) {
+        setErrors("Projects are required");
+      } else {
+        setErrors("");
+        setCurrentQuestion(currentQuestion + 1);
       }
     }
 
     setIsLoading(false);
-    if (!(currentQuestion === 10 || currentQuestion === 9)) {
+    if (
+      !(
+        currentQuestion === 10 ||
+        currentQuestion === 9 ||
+        currentQuestion === -1 ||
+        currentQuestion === 11 ||
+        currentQuestion === 12
+      )
+    ) {
       textInput.current.value = "";
     }
   }, [
-    errors,
-    isLoading,
     currentQuestion,
     name,
     csiEmail,
@@ -283,8 +335,31 @@ export default function Form() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // const docRef = doc(db, "students", "seniors");
-    // const snapshot = await getDoc(docRef);
+    const docRef = doc(db, "queue", "students");
+    await updateDoc(docRef, {
+      students: arrayUnion({
+        name,
+        csiEmail,
+        emplid,
+        level,
+        bio,
+        github,
+        interests,
+        skills,
+        linkedin,
+        portfolio,
+        imgLink,
+        projects,
+      }),
+    })
+      .then(() => {
+        setIsLoading(false);
+        navigate("/", { success: true });
+      })
+      .catch((err) => {
+        setErrors(err.message);
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -306,6 +381,8 @@ export default function Form() {
             height: "85vh",
             display: "flex",
             justifyContent: "center",
+            overflowX: "hidden",
+            overflowY: "scroll",
             alignItems: "center",
           }}
         >
@@ -318,147 +395,335 @@ export default function Form() {
               alignItems: "center",
             }}
           >
-            <FormControl fullWidth>
-              {currentQuestion === -1 ? (
-                <Fragment>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Typography variant="h4" gutterBottom>
-                      Welcome to the CSI Student Showcase Application
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                      Please click Next to start the application process.
-                    </Typography>
-                  </Box>
-                </Fragment>
-              ) : currentQuestion === 3 ? (
-                <Fragment>
-                  <InputLabel id="level">
-                    {questions[currentQuestion].label}
-                  </InputLabel>
-                  <Select
-                    error={errors !== ""}
-                    labelId="level"
-                    id="level"
-                    value={level}
-                    inputRef={textInput}
-                    label={questions[currentQuestion].label}
-                    onChange={(e) => setLevel(e.target.value)}
-                  >
-                    <MenuItem value={"Senior"}>Senior</MenuItem>
-                    <MenuItem value={"Junior"}>Junior</MenuItem>
-                    <MenuItem value={"Alumni"}>Alumni</MenuItem>
-                  </Select>
-                </Fragment>
-              ) : currentQuestion === 9 ? (
-                <Fragment>
-                  <ChipSelect
-                    index={currentQuestion}
-                    question={questions[currentQuestion].question}
-                    helper={questions[currentQuestion].helper}
-                    variable={interests}
-                    func={questions[currentQuestion].func}
-                  />
-                </Fragment>
-              ) : currentQuestion === 10 ? (
-                <Fragment>
-                  <ChipSelect
-                    index={currentQuestion}
-                    question={questions[currentQuestion].question}
-                    helper={questions[currentQuestion].helper}
-                    variable={skills}
-                    func={questions[currentQuestion].func}
-                  />
-                </Fragment>
-              ) : currentQuestion === 11 ? (
-                <Fragment></Fragment>
-              ) : (
-                <Fragment>
-                  <Box
-                    sx={{
-                      display: {
-                        xs: "block",
-                        sm: "block",
-                        md: "none",
-                        lg: "none",
-                        xlg: "none",
-                      },
-                    }}
-                  >
-                    <InputLabel shrink={true}>
-                      {questions[currentQuestion].question}
-                    </InputLabel>
-                  </Box>
-                  {imgLink !== "" ? (
-                    <Box sx={{ display: "flex", justifyContent: "center" }}>
-                      <Avatar sx={{ width: 200, height: 200 }} src={imgLink} />
+            {isLoading === false ? (
+              <FormControl fullWidth>
+                {currentQuestion < 0 || currentQuestion > 12 ? (
+                  <Fragment>
+                    <Box
+                      sx={{
+                        textAlign: "center",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Typography variant="h4" gutterBottom>
+                        Welcome to the CSI Student Showcase Application
+                      </Typography>
+                      <Typography variant="body1" gutterBottom>
+                        Please click Next to start the application process.
+                      </Typography>
                     </Box>
-                  ) : undefined}
-                  <TextField
-                    variant="filled"
-                    label={questions[currentQuestion].label}
-                    placeholder={questions[currentQuestion].question}
-                    autoFocus
-                    InputLabelProps={{ shrink: true }}
-                    error={errors !== ""}
-                    inputRef={textInput}
-                    multiline={currentQuestion === 4}
-                    onChange={(e) =>
-                      questions[currentQuestion].func(e.target.value)
-                    }
-                  />
-                  <FormHelperText sx={{ mb: 1 }} id="my-helper-text">
-                    {questions[currentQuestion].helper}
-                  </FormHelperText>
-                </Fragment>
-              )}
-            </FormControl>
+                  </Fragment>
+                ) : currentQuestion === 3 ? (
+                  <Fragment>
+                    <InputLabel id="level">
+                      {questions[currentQuestion].label}
+                    </InputLabel>
+                    <Select
+                      error={errors !== ""}
+                      labelId="level"
+                      id="level"
+                      value={level}
+                      inputRef={textInput}
+                      label={questions[currentQuestion].label}
+                      onChange={(e) => setLevel(e.target.value)}
+                    >
+                      <MenuItem value={"Senior"}>Senior</MenuItem>
+                      <MenuItem value={"Junior"}>Junior</MenuItem>
+                      <MenuItem value={"Alumni"}>Alumni</MenuItem>
+                    </Select>
+                  </Fragment>
+                ) : currentQuestion === 9 ? (
+                  <Fragment>
+                    <ChipSelect
+                      index={currentQuestion}
+                      question={questions[currentQuestion].question}
+                      helper={questions[currentQuestion].helper}
+                      variable={interests}
+                      func={questions[currentQuestion].func}
+                    />
+                  </Fragment>
+                ) : currentQuestion === 10 ? (
+                  <Fragment>
+                    <ChipSelect
+                      index={currentQuestion}
+                      question={questions[currentQuestion].question}
+                      helper={questions[currentQuestion].helper}
+                      variable={skills}
+                      func={questions[currentQuestion].func}
+                    />
+                  </Fragment>
+                ) : currentQuestion === 11 ? (
+                  <Fragment>
+                    <TextField
+                      required
+                      size="small"
+                      id="outlined-required"
+                      label="Project 1 Name"
+                      onChange={(e) =>
+                        setProjects((projects) => {
+                          projects[0].name = e.target.value;
+                          return projects;
+                        })
+                      }
+                    />
+                    <TextField
+                      required
+                      size="small"
+                      id="outlined-required"
+                      label="Project 1 GitHub Link"
+                      onChange={(e) =>
+                        setProjects((projects) => {
+                          projects[0].projectLink = e.target.value;
+                          return projects;
+                        })
+                      }
+                    />
+                    <TextField
+                      size="small"
+                      id="outlined-required"
+                      label="Project 1 Deployed Link"
+                      onChange={(e) =>
+                        setProjects((projects) => {
+                          projects[0].deployedLink = e.target.value;
+                          if (projects[0].deployedLink === "") {
+                            projects[0].deployedLink = "";
+                          } else {
+                            projects[0].isDeployed = true;
+                          }
+                          return projects;
+                        })
+                      }
+                    />
+                    <TextField
+                      required
+                      size="small"
+                      id="outlined-required"
+                      label="Project 2 Name"
+                      onChange={(e) =>
+                        setProjects((projects) => {
+                          projects[1].name = e.target.value;
+                          return projects;
+                        })
+                      }
+                    />
+                    <TextField
+                      required
+                      size="small"
+                      id="outlined-required"
+                      label="Project 2 GitHub Link"
+                      onChange={(e) =>
+                        setProjects((projects) => {
+                          projects[1].projectLink = e.target.value;
+                          return projects;
+                        })
+                      }
+                    />
+                    <TextField
+                      size="small"
+                      id="outlined-required"
+                      label="Project 2 Deployed Link"
+                      onChange={(e) =>
+                        setProjects((projects) => {
+                          projects[1].deployedLink = e.target.value;
+                          if (projects[1].deployedLink === "") {
+                            projects[1].deployedLink = "";
+                          } else {
+                            projects[1].isDeployed = true;
+                          }
+                          return projects;
+                        })
+                      }
+                    />
+                    {level !== "Junior" ? (
+                      <Fragment>
+                        <TextField
+                          required
+                          size="small"
+                          id="outlined-required"
+                          label="Project 3 Name"
+                          onChange={(e) =>
+                            setProjects((projects) => {
+                              projects[2].name = e.target.value;
+                              return projects;
+                            })
+                          }
+                        />
+                        <TextField
+                          required
+                          size="small"
+                          id="outlined-required"
+                          label="Project 3 GitHub Link"
+                          onChange={(e) =>
+                            setProjects((projects) => {
+                              projects[2].projectLink = e.target.value;
+                              return projects;
+                            })
+                          }
+                        />
+                        <TextField
+                          size="small"
+                          id="outlined-required"
+                          label="Project 3 Deployed Link"
+                          onChange={(e) =>
+                            setProjects((projects) => {
+                              projects[2].deployedLink = e.target.value;
+                              if (projects[2].deployedLink === "") {
+                                projects[2].deployedLink = "";
+                              } else {
+                                projects[2].isDeployed = true;
+                              }
+                              return projects;
+                            })
+                          }
+                        />
+                      </Fragment>
+                    ) : undefined}
+                  </Fragment>
+                ) : currentQuestion === 12 ? (
+                  <Fragment>
+                    <Box
+                      sx={{
+                        textAlign: "center",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Typography variant="h4" gutterBottom>
+                        Thank you for completing the application!
+                      </Typography>
+                      <Typography variant="body1" gutterBottom>
+                        Please click Submit to submit your application. The
+                        application will be reviewed by the CUNY2X academic
+                        advisor. If there are any changes that need to be made,
+                        you will receive an email with feedback.
+                      </Typography>
+                      <ReCAPTCHA
+                        required
+                        style={{ marginBottom: "10px" }}
+                        sitekey={process.env.REACT_APP_GOOGLE_RECAPTCHA}
+                        onChange={onRecaptchaChange}
+                        render="explicit"
+                        onErrored={onError}
+                        onExpired={onError}
+                      />
+                      {isLoading ? <CircularProgress /> : undefined}
+                      <Button
+                        disabled={!recaptcha}
+                        variant="contained"
+                        color="success"
+                        onClick={onSubmit}
+                      >
+                        Submit
+                      </Button>
+                    </Box>
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    <Box
+                      sx={{
+                        display: {
+                          xs: "block",
+                          sm: "block",
+                          md: "none",
+                          lg: "none",
+                          xlg: "none",
+                        },
+                      }}
+                    >
+                      <InputLabel shrink={true}>
+                        {questions[currentQuestion].question}
+                      </InputLabel>
+                    </Box>
+                    {imgLink !== "" ? (
+                      <Box sx={{ display: "flex", justifyContent: "center" }}>
+                        <Avatar
+                          sx={{ width: 200, height: 200 }}
+                          src={imgLink}
+                        />
+                      </Box>
+                    ) : undefined}
+                    <TextField
+                      required={currentQuestion === 7 ? false : true}
+                      variant="filled"
+                      label={questions[currentQuestion].label}
+                      placeholder={questions[currentQuestion].question}
+                      value={questions[currentQuestion].value}
+                      autoFocus
+                      InputLabelProps={{ shrink: true }}
+                      error={errors !== ""}
+                      inputRef={textInput}
+                      multiline={currentQuestion === 4}
+                      onChange={(e) =>
+                        questions[currentQuestion].func(e.target.value)
+                      }
+                    />
+                    <FormHelperText sx={{ mb: 1 }} id="my-helper-text">
+                      {questions[currentQuestion].helper}
+                    </FormHelperText>
+                  </Fragment>
+                )}
+              </FormControl>
+            ) : (
+              <CircularProgress />
+            )}
             {errors ? (
               <Alert sx={{ width: "90%" }} severity="error">
                 {errors}
               </Alert>
             ) : null}
-            <MobileStepper
-              variant="dots"
-              steps={questions.length}
-              position="static"
-              activeStep={currentQuestion}
-              sx={{ width: "95%", flexGrow: 1 }}
-              nextButton={
-                <Button
-                  size="small"
-                  onClick={onNext}
-                  disabled={currentQuestion === 11}
-                >
-                  Next
-                  {theme.direction === "rtl" ? (
-                    <KeyboardArrowLeft />
-                  ) : (
-                    <KeyboardArrowRight />
-                  )}
-                </Button>
-              }
-              backButton={
-                <Button
-                  size="small"
-                  onClick={onPrevious}
-                  disabled={currentQuestion === -1 || currentQuestion === 0}
-                >
-                  {theme.direction === "rtl" ? (
-                    <KeyboardArrowRight />
-                  ) : (
-                    <KeyboardArrowLeft />
-                  )}
-                  Back
-                </Button>
-              }
-            />
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <MobileStepper
+                variant="dots"
+                steps={questions.length}
+                position="static"
+                activeStep={currentQuestion}
+                sx={{ width: "100%", flexGrow: 1 }}
+                nextButton={
+                  <Button
+                    size="small"
+                    onClick={onNext}
+                    disabled={currentQuestion === 12}
+                  >
+                    Next
+                    {theme.direction === "rtl" ? (
+                      <KeyboardArrowLeft />
+                    ) : (
+                      <KeyboardArrowRight />
+                    )}
+                  </Button>
+                }
+                backButton={
+                  <Button
+                    size="small"
+                    onClick={onPrevious}
+                    disabled={
+                      currentQuestion === -1 ||
+                      currentQuestion === 0 ||
+                      currentQuestion === 12
+                    }
+                  >
+                    {theme.direction === "rtl" ? (
+                      <KeyboardArrowRight />
+                    ) : (
+                      <KeyboardArrowLeft />
+                    )}
+                    Back
+                  </Button>
+                }
+              />
+            </Box>
           </FormGroup>
         </Paper>
       </Box>
