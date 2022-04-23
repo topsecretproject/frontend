@@ -13,7 +13,13 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
-import { doc, getDoc } from "@firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "@firebase/firestore";
 import db from "../firebase/firebase";
 import Loading from "../components/Loading";
 import "./styles/Admin.css";
@@ -58,6 +64,40 @@ export default function Admin() {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const onApprove = async (id) => {
+    const queueRef = doc(db, "queue", "students");
+    if (queues.students[id].level === "Junior") {
+      const juniorRef = doc(db, "students", "juniors");
+      await updateDoc(juniorRef, {
+        students: arrayUnion(queues.students[id]),
+      });
+    }
+    if (queues.students[id].level === "Senior") {
+      const seniorRef = doc(db, "students", "seniors");
+      await updateDoc(seniorRef, {
+        students: arrayUnion(queues.students[id]),
+      });
+    }
+    if (queues.students[id].level === "Alumni") {
+      const alumniRef = doc(db, "students", "alumni");
+      await updateDoc(alumniRef, {
+        students: arrayUnion(queues.students[id]),
+      });
+    }
+    await updateDoc(queueRef, {
+      students: arrayRemove(queues.students[id]),
+    });
+    window.location.reload();
+  };
+
+  const onDecline = async (id) => {
+    const queueRef = doc(db, "queue", "students");
+    await updateDoc(queueRef, {
+      students: arrayRemove(queues.students[id]),
+    });
+    window.location.reload();
   };
 
   const fetchQueue = async () => {
@@ -166,6 +206,8 @@ export default function Admin() {
                 {queues.students?.map((queue, index) => (
                   <Queue
                     expanded={expanded}
+                    onApprove={onApprove}
+                    onDecline={onDecline}
                     handleExpand={handleExpand}
                     key={index}
                     id={index}

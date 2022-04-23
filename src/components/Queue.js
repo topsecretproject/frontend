@@ -55,6 +55,8 @@ export default function Queue({
   interests,
   linkedin,
   github,
+  onApprove,
+  onDecline,
 }) {
   const [open, setOpen] = React.useState(false);
   const handlePromptOpen = () => setOpen(true);
@@ -284,7 +286,11 @@ export default function Queue({
         </Grid>
       </AccordionDetails>
       <AccordionActions>
-        <Button variant="contained" color="success">
+        <Button
+          onClick={() => onApprove(id)}
+          variant="contained"
+          color="success"
+        >
           Approve
         </Button>
         <Button
@@ -311,10 +317,18 @@ export default function Queue({
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Are you sure you want to decline this student?
             </Typography>
-            <Button varaint="contained" color="error">
+            <Button
+              onClick={() => onDecline(id)}
+              varaint="contained"
+              color="error"
+            >
               Yes
             </Button>
-            <Button varaint="contained" color="success">
+            <Button
+              onClick={handlePromptClose}
+              varaint="contained"
+              color="success"
+            >
               No
             </Button>
           </Box>
@@ -325,6 +339,8 @@ export default function Queue({
 }
 
 Queue.propTypes = {
+  onDecline: PropTypes.func.isRequired,
+  onApprove: PropTypes.func.isRequired,
   csiEmail: PropTypes.string.isRequired,
   portfolio: PropTypes.string,
   linkedin: PropTypes.string.isRequired,
