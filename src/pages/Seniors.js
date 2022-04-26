@@ -12,8 +12,10 @@ import {
   CardActions,
   Avatar,
   Grid,
-  Chips,
+  Chip,
+  Typography,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 
 export default function Seniors() {
   const [seniors, setSeniors] = useState([]);
@@ -34,6 +36,18 @@ export default function Seniors() {
   return (
     <Fragment>
       <Header />
+      <Grid container spacing={3}>
+        {seniors.students?.map((student) => (
+          // 1 card for iphone, 3 card for ipad, 3 card for macbook
+          <Grid item xs={12} sm={3} md={3} key={student.id}>
+            <CardContent>
+              <Typography sx={{ fontSize: 18 }} gutterBottom>
+                {student.name}
+              </Typography>
+            </CardContent>
+          </Grid>
+        ))}
+      </Grid>
     </Fragment>
   );
 }
