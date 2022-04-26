@@ -25,6 +25,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import db from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
+import { OptionUnstyled } from "@mui/base";
 
 export default function Form() {
   const navigate = useNavigate();
@@ -396,7 +397,10 @@ export default function Form() {
             }}
           >
             {isLoading === false ? (
-              <FormControl fullWidth>
+              <FormControl
+                fullWidth
+                disabled={interests.length === 5 && currentQuestion === 9}
+              >
                 {currentQuestion < 0 || currentQuestion > 12 ? (
                   <Fragment>
                     <Box

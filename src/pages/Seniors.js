@@ -3,6 +3,17 @@ import { doc, getDoc } from "@firebase/firestore";
 import { useState, useEffect } from "react";
 import db from "../firebase/firebase";
 import Header from "../components/Header";
+import {
+  Button,
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  CardActions,
+  Avatar,
+  Grid,
+  Chips,
+} from "@mui/material";
 
 export default function Seniors() {
   const [seniors, setSeniors] = useState([]);
