@@ -399,7 +399,10 @@ export default function Form() {
             {isLoading === false ? (
               <FormControl
                 fullWidth
-                disabled={interests.length === 5 && currentQuestion === 9}
+                disabled={
+                  (skills.length === 6 || interests.length === 3) &&
+                  (currentQuestion === 9 || currentQuestion === 10)
+                }
               >
                 {currentQuestion < 0 || currentQuestion > 12 ? (
                   <Fragment>
