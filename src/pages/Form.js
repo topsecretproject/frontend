@@ -12,6 +12,7 @@ import {
   Avatar,
   Alert,
   CircularProgress,
+  Stack,
 } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -25,7 +26,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import db from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
-import { OptionUnstyled } from "@mui/base";
+import Switch from "@mui/material/Switch";
 
 export default function Form() {
   const navigate = useNavigate();
@@ -37,6 +38,9 @@ export default function Form() {
   const [currentQuestion, setCurrentQuestion] = useState(-1);
   const [csiEmail, setCsiEmail] = useState("");
   const [name, setName] = useState("");
+  const [company, setCompany] = useState("");
+  const [role, setRole] = useState("");
+  const [mentor, setMentor] = useState(false);
   const [bio, setBio] = useState("");
   const [emplid, setEmplid] = useState("");
   const [github, setGithub] = useState("");
@@ -80,8 +84,16 @@ export default function Form() {
       func: setName,
     },
     {
+      label: "Academic Year",
+      question: "What is your level?",
+      helper: "Please select your Academic Year",
+      func: setLevel,
+    },
+    {
       label: "CSI Email",
       question: "What is your CSI email?",
+      aQuestion: "What is your preferred email?",
+      alumni: "Please enter your preferred Email",
       helper: "Please enter your CSI email",
       func: setCsiEmail,
     },
@@ -92,15 +104,9 @@ export default function Form() {
       func: setEmplid,
     },
     {
-      label: "Academic Year",
-      question: "What is your level?",
-      helper: "Please select your Academic Year",
-      func: setLevel,
-    },
-    {
       label: "Bio",
       question: "What is your bio?",
-      helper: "Must be minimum of 300 charaters long.",
+      helper: "Must be minimum of 200 charaters long.",
       func: setBio,
     },
     {
@@ -177,33 +183,6 @@ export default function Form() {
       }
     }
     if (currentQuestion === 1) {
-      if (csiEmail === "") {
-        setErrors("CSI Email is required");
-      } else if (
-        !/^[a-zA-Z]+.[a-zA-Z0-9]+@cix.csi.cuny.edu$/.test(
-          csiEmail.toLowerCase()
-        )
-      ) {
-        setErrors(
-          "CSI Email must be in the format of first.last@cix.csi.cuny.edu"
-        );
-      } else {
-        setErrors("");
-        setCurrentQuestion(currentQuestion + 1);
-      }
-      setCsiEmail(csiEmail.toLowerCase());
-    }
-    if (currentQuestion === 2) {
-      if (emplid === "") {
-        setErrors("Emplid is required");
-      } else if (!/^[0-9]{8}$/.test(emplid)) {
-        setErrors("Emplid must be 8 digits only");
-      } else {
-        setErrors("");
-        setCurrentQuestion(currentQuestion + 1);
-      }
-    }
-    if (currentQuestion === 3) {
       if (level === "") {
         setErrors("Level is required");
       } else {
@@ -211,11 +190,55 @@ export default function Form() {
         setCurrentQuestion(currentQuestion + 1);
       }
     }
+    if (currentQuestion === 2) {
+      if (csiEmail === "") {
+        setErrors("Email is required");
+      } else if (
+        !/^[a-zA-Z]+.[a-zA-Z0-9]+@cix.csi.cuny.edu$/.test(
+          csiEmail.toLowerCase()
+        ) &&
+        level !== "Alumni"
+      ) {
+        setErrors(
+          "CSI Email must be in the format of first.last@cix.csi.cuny.edu"
+        );
+      } else if (level === "Alumni") {
+        if (!/^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/.test(csiEmail.toLowerCase())) {
+          setErrors("Email must valid");
+        } else {
+          setErrors("");
+          setCurrentQuestion(currentQuestion + 1);
+        }
+      } else {
+        setErrors("");
+        setCurrentQuestion(currentQuestion + 1);
+      }
+      setCsiEmail(csiEmail.toLowerCase());
+    }
+    if (currentQuestion === 3) {
+      if (level === "Alumni") {
+        if (company === "" || role === "") {
+          setErrors("Company and Role are required");
+        } else {
+          setErrors("");
+          setCurrentQuestion(currentQuestion + 1);
+        }
+      } else {
+        if (emplid === "") {
+          setErrors("Emplid is required");
+        } else if (!/^[0-9]{8}$/.test(emplid)) {
+          setErrors("Emplid must be 8 digits only");
+        } else {
+          setErrors("");
+          setCurrentQuestion(currentQuestion + 1);
+        }
+      }
+    }
     if (currentQuestion === 4) {
       if (bio === "") {
         setErrors("Bio is required");
-      } else if (bio.length < 300) {
-        setErrors("Bio must be a minimum of 300 characters");
+      } else if (bio.length < 200) {
+        setErrors("Bio must be a minimum of 200 characters");
       } else {
         setErrors("");
         setCurrentQuestion(currentQuestion + 1);
@@ -251,7 +274,7 @@ export default function Form() {
       const regex = new RegExp(
         "^((ftp|http|https)://)?(www.)?(?!.*(ftp|http|https|www.))[a-zA-Z0-9_-]+(.[a-zA-Z]+)+((/)[w#]+)*(/w+?[a-zA-Z0-9_]+=w+(&[a-zA-Z0-9_]+=w+)*)?$"
       );
-      if (portfolio === "") {
+      if (!portfolio === "") {
         if (!regex.test(portfolio)) {
           setErrors("Portfolio must be a valid link");
         }
@@ -307,7 +330,8 @@ export default function Form() {
         currentQuestion === 9 ||
         currentQuestion === -1 ||
         currentQuestion === 11 ||
-        currentQuestion === 12
+        currentQuestion === 12 ||
+        (currentQuestion === 3 && level === "Alumni")
       )
     ) {
       textInput.current.value = "";
@@ -421,9 +445,13 @@ export default function Form() {
                       <Typography variant="body1" gutterBottom>
                         Please click Next to start the application process.
                       </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        * Note: You can go back to edit your answers. The
+                        answers are saved but won't show in the field.
+                      </Typography>
                     </Box>
                   </Fragment>
-                ) : currentQuestion === 3 ? (
+                ) : currentQuestion === 1 ? (
                   <Fragment>
                     <InputLabel id="level">
                       {questions[currentQuestion].label}
@@ -462,7 +490,7 @@ export default function Form() {
                       func={questions[currentQuestion].func}
                     />
                   </Fragment>
-                ) : currentQuestion === 11 ? (
+                ) : currentQuestion === 11 && level !== "Alumni" ? (
                   <Fragment>
                     <TextField
                       required
@@ -629,6 +657,32 @@ export default function Form() {
                       </Button>
                     </Box>
                   </Fragment>
+                ) : currentQuestion === 3 && level === "Alumni" ? (
+                  <Fragment>
+                    <TextField
+                      required
+                      size="small"
+                      id="outlined-required"
+                      label="Current Company Name"
+                      onChange={(e) => setCompany(e.target.value)}
+                    />
+                    <TextField
+                      required
+                      size="small"
+                      id="outlined-required"
+                      label="Current Role"
+                      onChange={(e) => setRole(e.target.value)}
+                    />
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Typography>
+                        Would you be willing to Mentor a Student?
+                      </Typography>
+                      <Switch
+                        checked={mentor}
+                        onChange={() => setMentor(!mentor)}
+                      />
+                    </Stack>
+                  </Fragment>
                 ) : (
                   <Fragment>
                     <Box
@@ -657,8 +711,20 @@ export default function Form() {
                     <TextField
                       required={currentQuestion === 7 ? false : true}
                       variant="filled"
-                      label={questions[currentQuestion].label}
-                      placeholder={questions[currentQuestion].question}
+                      label={
+                        currentQuestion === 2
+                          ? level === "Alumni"
+                            ? questions[currentQuestion].aQuestion
+                            : questions[currentQuestion].aQuestion
+                          : questions[currentQuestion].question
+                      }
+                      placeholder={
+                        currentQuestion === 2
+                          ? level === "Alumni"
+                            ? questions[currentQuestion].alumni
+                            : questions[currentQuestion].helper
+                          : questions[currentQuestion].helper
+                      }
                       value={questions[currentQuestion].value}
                       autoFocus
                       InputLabelProps={{ shrink: true }}
@@ -670,7 +736,11 @@ export default function Form() {
                       }
                     />
                     <FormHelperText sx={{ mb: 1 }} id="my-helper-text">
-                      {questions[currentQuestion].helper}
+                      {currentQuestion === 2
+                        ? level === "Alumni"
+                          ? questions[currentQuestion].aQuestion
+                          : questions[currentQuestion].aQuestion
+                        : questions[currentQuestion].question}
                     </FormHelperText>
                   </Fragment>
                 )}
