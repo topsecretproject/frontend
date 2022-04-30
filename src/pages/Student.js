@@ -76,6 +76,24 @@ export default function Student() {
           </Alert>
         ) : (
           <Fragment>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                mb: 3,
+              }}
+            >
+              <Button
+                component={Link}
+                to="/"
+                color="error"
+                size="small"
+                variant="contained"
+              >
+                BACK
+              </Button>
+            </Box>
             <Box sx={{ backgroundColor: "white", borderRadius: "15px", p: 4 }}>
               <Grid
                 justifyContent="center"
