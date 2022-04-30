@@ -22,10 +22,16 @@ export default function StudentsCard({ student }) {
   return (
     <Fragment>
       <Grid mb={8} item xs={12} sm={12} md={4} lg={4} key={student.id}>
-        <Card sx={{ overflow: "visible" }} variant="outlined">
+        <Card
+          sx={{
+            overflow: "visible",
+            border: "5px solid #1976D2",
+          }}
+        >
           <CardContent>
             <Avatar
               sx={{
+                border: "5px solid #1976D2",
                 height: "150px",
                 width: "150px",
                 margin: "-100px auto 0 auto",
