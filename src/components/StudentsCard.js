@@ -26,6 +26,7 @@ export default function StudentsCard({ student }) {
           sx={{
             overflow: "visible",
             border: "5px solid #1976D2",
+            height: "280px",
           }}
         >
           <CardContent>
@@ -42,20 +43,21 @@ export default function StudentsCard({ student }) {
               {student.name}
               <hr></hr>
             </Typography>
-            {student.interests?.map((student) => (
-              <Grid item key={student.interests}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    listStyle: "none",
-                    p: 0.5,
-                    m: 0,
-                    backgroundColor: "#E6E6E6E6",
-                  }}
-                  component="ul"
-                >
+            <Paper
+              elevation={2}
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                listStyle: "none",
+                p: 0.5,
+                m: 0,
+                backgroundColor: "#E6E6E6",
+                height: "69px",
+              }}
+              component="ul"
+            >
+              {student.interests?.map((student) => (
+                <Grid item key={student.interests}>
                   <ListItem key={student}>
                     <Chip
                       variant="outlined"
@@ -64,9 +66,9 @@ export default function StudentsCard({ student }) {
                       label={student}
                     />
                   </ListItem>
-                </Paper>
-              </Grid>
-            ))}
+                </Grid>
+              ))}
+            </Paper>
           </CardContent>
           <CardActions>
             <Button variant="contained" component={Link} to="/student">
