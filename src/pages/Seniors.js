@@ -14,6 +14,7 @@ import {
   Grid,
   Chip,
   Typography,
+  CardMedia,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 
@@ -38,11 +39,24 @@ export default function Seniors() {
       <Header />
       <Grid container spacing={3}>
         {seniors.students?.map((student) => (
-          // 1 card for iphone, 3 card for ipad, 3 card for macbook
           <Grid item xs={12} sm={3} md={3} key={student.id}>
+            <CardMedia
+              component="img"
+              height="140"
+              image={student.imgLink}
+              alt="avatar"
+            />
             <CardContent>
-              <Typography sx={{ fontSize: 18 }} gutterBottom>
+              <Typography gutterBottom variant="h5" align="center">
                 {student.name}
+              </Typography>
+              <Typography
+                gutterBottom
+                variant="h5"
+                align="center"
+                color="text.secondary"
+              >
+                <u>Interests</u>
               </Typography>
             </CardContent>
           </Grid>
