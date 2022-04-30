@@ -5,18 +5,19 @@ import db from "../firebase/firebase";
 import Header from "../components/Header";
 import {
   Button,
-  Box,
   Card,
   CardContent,
-  CardHeader,
   CardActions,
   Avatar,
   Grid,
   Chip,
   Typography,
   CardMedia,
+  styled,
+  Paper,
 } from "@mui/material";
 import { Link } from "react-router-dom";
+import { borderColor } from "@mui/system";
 
 export default function Seniors() {
   const [seniors, setSeniors] = useState([]);
@@ -30,6 +31,10 @@ export default function Seniors() {
     setLoading(false);
   };
 
+  const ListItem = styled("li")(({ theme }) => ({
+    margin: theme.spacing(0.5),
+  }));
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -37,28 +42,53 @@ export default function Seniors() {
   return (
     <Fragment>
       <Header />
-      <Grid container spacing={3}>
+      <Grid container spacing={2} padding={2}>
         {seniors.students?.map((student) => (
-          <Grid item xs={12} sm={3} md={3} key={student.id}>
+          <Grid item xs={12} sm={12} md={4} lg={4} key={student.id}>
             <CardMedia
               component="img"
-              height="140"
+              height="100"
               image={student.imgLink}
               alt="avatar"
             />
-            <CardContent>
-              <Typography gutterBottom variant="h5" align="center">
-                {student.name}
-              </Typography>
-              <Typography
-                gutterBottom
-                variant="h5"
-                align="center"
-                color="text.secondary"
-              >
-                <u>Interests</u>
-              </Typography>
-            </CardContent>
+            <Card variant="outlined">
+              <CardContent>
+                <Typography gutterBottom variant="h5" align="center">
+                  {student.name}
+                  <hr></hr>
+                </Typography>
+                {student.interests?.map((student) => (
+                  <Grid item key={student.interests}>
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        listStyle: "none",
+                        p: 0.5,
+                        m: 0,
+                        backgroundColor: "#E6E6E6E6",
+                      }}
+                      component="ul"
+                    >
+                      <ListItem key={student}>
+                        <Chip
+                          variant="outlined"
+                          color="info"
+                          size="small"
+                          label={student}
+                        />
+                      </ListItem>
+                    </Paper>
+                  </Grid>
+                ))}
+              </CardContent>
+              <CardActions>
+                <Button variant="contained" component={Link} to="/student">
+                  View Profile
+                </Button>
+              </CardActions>
+            </Card>
           </Grid>
         ))}
       </Grid>
