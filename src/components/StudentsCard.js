@@ -18,7 +18,7 @@ const ListItem = styled("li")(({ theme }) => ({
   margin: theme.spacing(0.5),
 }));
 
-export default function StudentsCard({ student }) {
+export default function StudentsCard({ student, index }) {
   return (
     <Fragment>
       <Grid mb={8} item xs={12} sm={12} md={4} lg={4} key={student.id}>
@@ -71,7 +71,11 @@ export default function StudentsCard({ student }) {
             </Paper>
           </CardContent>
           <CardActions>
-            <Button variant="contained" component={Link} to="/student">
+            <Button
+              variant="contained"
+              component={Link}
+              to={`/${student.level.toLowerCase()}s/${index}`}
+            >
               View Profile
             </Button>
           </CardActions>

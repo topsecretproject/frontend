@@ -26,8 +26,8 @@ export default function Seniors() {
     <Fragment>
       <Header />
       <Grid sx={{ mt: 1 }} container spacing={7} padding={5}>
-        {seniors.students?.map((student) => (
-          <StudentsCard student={student} />
+        {seniors.students?.map((student, index) => (
+          <StudentsCard student={student} index={index} />
         ))}
       </Grid>
     </Fragment>
