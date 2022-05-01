@@ -342,6 +342,8 @@ export default function Form() {
     csiEmail,
     emplid,
     level,
+    company,
+    role,
     bio,
     github,
     interests,
@@ -421,10 +423,7 @@ export default function Form() {
             }}
           >
             {isLoading === false ? (
-              <FormControl
-                fullWidth
-                // disabled={skills.length === 6 || interests.length === 3}
-              >
+              <FormControl fullWidth>
                 {currentQuestion < 0 || currentQuestion > 12 ? (
                   <Fragment>
                     <Box
@@ -837,7 +836,7 @@ export default function Form() {
                 steps={questions.length}
                 position="static"
                 activeStep={currentQuestion}
-                sx={{ width: "100%", flexGrow: 1 }}
+                sx={{ width: "90vw", flexGrow: 1 }}
                 nextButton={
                   <Button
                     size="small"

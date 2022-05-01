@@ -112,7 +112,7 @@ export default function Student() {
                     }}
                     src={student.imgLink}
                   />
-                  <Typography sx={{ textAlign: "center" }} variant="h3">
+                  <Typography sx={{ textAlign: "center" }} variant="h4">
                     {student.name}
                   </Typography>
                 </Grid>
