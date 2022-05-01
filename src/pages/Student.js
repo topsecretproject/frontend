@@ -105,8 +105,8 @@ export default function Student() {
                 <Grid item xs={12} sm={4}>
                   <Avatar
                     sx={{
-                      width: "200px",
-                      height: "200px",
+                      width: "11rem",
+                      height: "11rem",
                       margin: "auto",
                       border: "5px solid #1976D2",
                     }}

@@ -25,7 +25,7 @@ export default function StudentsCard({ student, index }) {
           sx={{
             overflow: "visible",
             border: "5px solid #1976D2",
-            height: "280px",
+            height: "320px",
           }}
         >
           <CardContent>
@@ -51,7 +51,7 @@ export default function StudentsCard({ student, index }) {
                 p: 0.5,
                 m: 0,
                 backgroundColor: "#E6E6E6",
-                height: "69px",
+                height: "6rem",
               }}
               component="ul"
             >
