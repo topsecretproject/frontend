@@ -8,7 +8,6 @@ import {
   Grid,
   Chip,
   Typography,
-  CardMedia,
   styled,
   Paper,
 } from "@mui/material";

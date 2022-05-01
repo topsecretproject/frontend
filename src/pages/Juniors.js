@@ -5,6 +5,7 @@ import db from "../firebase/firebase";
 import Header from "../components/Header";
 import { Grid } from "@mui/material";
 import StudentsCard from "../components/StudentsCard";
+import { CircularProgress } from "@mui/material";
 
 export default function Juniors() {
   const [juniors, setJuniors] = useState([]);
@@ -25,11 +26,17 @@ export default function Juniors() {
   return (
     <Fragment>
       <Header />
-      <Grid sx={{ mt: 1 }} container spacing={7} padding={5}>
-        {juniors.students?.map((student, index) => (
-          <StudentsCard student={student} index={index} />
-        ))}
-      </Grid>
+      {loading ? (
+        <Grid container justify="center" alignItems="center">
+          <CircularProgress />
+        </Grid>
+      ) : (
+        <Grid sx={{ mt: 1 }} container spacing={7} padding={5}>
+          {juniors.students?.map((student, index) => (
+            <StudentsCard student={student} index={index} />
+          ))}
+        </Grid>
+      )}
     </Fragment>
   );
 }

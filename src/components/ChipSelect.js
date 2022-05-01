@@ -94,6 +94,7 @@ export default function ChipSelect({
   question,
   helper,
   index,
+  length,
 }) {
   const theme = useTheme();
 
@@ -106,6 +107,11 @@ export default function ChipSelect({
       setOptions(skills);
     }
   }, [index]);
+
+  const getDisabled = (val) => {
+    if (val) return { disabled: true };
+    return {};
+  };
 
   const handleChange = (event) => {
     const {
@@ -127,6 +133,7 @@ export default function ChipSelect({
       <Fragment>
         <InputLabel id="multiple-chip-label">{question}</InputLabel>
         <Select
+          {...getDisabled(index === 9 ? length > 2 : length > 5)}
           sx={{ width: "100%" }}
           input={<OutlinedInput id="select-multiple-chip" label={question} />}
           labelId="multiple-chip-label"
@@ -161,6 +168,10 @@ export default function ChipSelect({
             <MenuItem
               key={option}
               value={option}
+              disabled={
+                (index === 9 ? length > 2 : length > 5) &&
+                variable.indexOf(option) === -1
+              }
               style={getStyles(option, variable, theme)}
             >
               {option}

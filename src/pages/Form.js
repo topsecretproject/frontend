@@ -135,14 +135,14 @@ export default function Form() {
     },
     {
       label: "Interests",
-      question: "What are your interests? Please select all that apply.",
-      helper: "Select as many as possible",
+      question: "What are your interests? Please select your top 3 interests.",
+      helper: "Select your top 3 interests",
       func: setInterests,
     },
     {
       label: "Skills",
-      question: "What are your skills? Please select all that apply.",
-      helper: "Select as many as possible",
+      question: "What are your skills? Please select your top 6 skills.",
+      helper: "Select as your top 6 skills",
       func: setSkills,
     },
     {
@@ -470,6 +470,7 @@ export default function Form() {
                 ) : currentQuestion === 9 ? (
                   <Fragment>
                     <ChipSelect
+                      length={interests.length}
                       index={currentQuestion}
                       question={questions[currentQuestion].question}
                       helper={questions[currentQuestion].helper}
@@ -480,6 +481,7 @@ export default function Form() {
                 ) : currentQuestion === 10 ? (
                   <Fragment>
                     <ChipSelect
+                      length={skills.length}
                       index={currentQuestion}
                       question={questions[currentQuestion].question}
                       helper={questions[currentQuestion].helper}
@@ -490,36 +492,54 @@ export default function Form() {
                 ) : currentQuestion === 11 && level !== "Alumni" ? (
                   <Fragment>
                     <TextField
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          onNext();
+                        }
+                      }}
                       required
                       size="small"
                       id="outlined-required"
                       label="Project 1 Name"
                       onChange={(e) =>
                         setProjects((projects) => {
-                          projects[0].name = e.target.value;
+                          projects[0].name = e.target.value.trim();
                           return projects;
                         })
                       }
                     />
                     <TextField
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          onNext();
+                        }
+                      }}
                       required
                       size="small"
                       id="outlined-required"
                       label="Project 1 GitHub Link"
                       onChange={(e) =>
                         setProjects((projects) => {
-                          projects[0].projectLink = e.target.value;
+                          projects[0].projectLink = e.target.value.trim();
                           return projects;
                         })
                       }
                     />
                     <TextField
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          onNext();
+                        }
+                      }}
                       size="small"
                       id="outlined-required"
                       label="Project 1 Deployed Link"
                       onChange={(e) =>
                         setProjects((projects) => {
-                          projects[0].deployedLink = e.target.value;
+                          projects[0].deployedLink = e.target.value.trim();
                           if (projects[0].deployedLink === "") {
                             projects[0].deployedLink = "";
                           } else {
@@ -530,36 +550,54 @@ export default function Form() {
                       }
                     />
                     <TextField
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          onNext();
+                        }
+                      }}
                       required
                       size="small"
                       id="outlined-required"
                       label="Project 2 Name"
                       onChange={(e) =>
                         setProjects((projects) => {
-                          projects[1].name = e.target.value;
+                          projects[1].name = e.target.value.trim();
                           return projects;
                         })
                       }
                     />
                     <TextField
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          onNext();
+                        }
+                      }}
                       required
                       size="small"
                       id="outlined-required"
                       label="Project 2 GitHub Link"
                       onChange={(e) =>
                         setProjects((projects) => {
-                          projects[1].projectLink = e.target.value;
+                          projects[1].projectLink = e.target.value.trim();
                           return projects;
                         })
                       }
                     />
                     <TextField
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          onNext();
+                        }
+                      }}
                       size="small"
                       id="outlined-required"
                       label="Project 2 Deployed Link"
                       onChange={(e) =>
                         setProjects((projects) => {
-                          projects[1].deployedLink = e.target.value;
+                          projects[1].deployedLink = e.target.value.trim();
                           if (projects[1].deployedLink === "") {
                             projects[1].deployedLink = "";
                           } else {
@@ -572,36 +610,54 @@ export default function Form() {
                     {level !== "Junior" ? (
                       <Fragment>
                         <TextField
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              onNext();
+                            }
+                          }}
                           required
                           size="small"
                           id="outlined-required"
                           label="Project 3 Name"
                           onChange={(e) =>
                             setProjects((projects) => {
-                              projects[2].name = e.target.value;
+                              projects[2].name = e.target.value.trim();
                               return projects;
                             })
                           }
                         />
                         <TextField
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              onNext();
+                            }
+                          }}
                           required
                           size="small"
                           id="outlined-required"
                           label="Project 3 GitHub Link"
                           onChange={(e) =>
                             setProjects((projects) => {
-                              projects[2].projectLink = e.target.value;
+                              projects[2].projectLink = e.target.value.trim();
                               return projects;
                             })
                           }
                         />
                         <TextField
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              onNext();
+                            }
+                          }}
                           size="small"
                           id="outlined-required"
                           label="Project 3 Deployed Link"
                           onChange={(e) =>
                             setProjects((projects) => {
-                              projects[2].deployedLink = e.target.value;
+                              projects[2].deployedLink = e.target.value.trim();
                               if (projects[2].deployedLink === "") {
                                 projects[2].deployedLink = "";
                               } else {
@@ -657,18 +713,30 @@ export default function Form() {
                 ) : currentQuestion === 3 && level === "Alumni" ? (
                   <Fragment>
                     <TextField
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          onNext();
+                        }
+                      }}
                       required
                       size="small"
                       id="outlined-required"
                       label="Current Company Name"
-                      onChange={(e) => setCompany(e.target.value)}
+                      onChange={(e) => setCompany(e.target.value.trim())}
                     />
                     <TextField
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          onNext();
+                        }
+                      }}
                       required
                       size="small"
                       id="outlined-required"
                       label="Current Role"
-                      onChange={(e) => setRole(e.target.value)}
+                      onChange={(e) => setRole(e.target.value.trim())}
                     />
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Typography>
@@ -706,6 +774,12 @@ export default function Form() {
                       </Box>
                     ) : undefined}
                     <TextField
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          onNext();
+                        }
+                      }}
                       required={currentQuestion === 7 ? false : true}
                       variant="filled"
                       label={
@@ -729,7 +803,7 @@ export default function Form() {
                       inputRef={textInput}
                       multiline={currentQuestion === 4}
                       onChange={(e) =>
-                        questions[currentQuestion].func(e.target.value)
+                        questions[currentQuestion].func(e.target.value.trim())
                       }
                     />
                     <FormHelperText sx={{ mb: 1 }} id="my-helper-text">

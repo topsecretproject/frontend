@@ -3,8 +3,9 @@ import { doc, getDoc } from "@firebase/firestore";
 import { useState, useEffect } from "react";
 import db from "../firebase/firebase";
 import Header from "../components/Header";
-import { Grid, styled } from "@mui/material";
+import { Grid } from "@mui/material";
 import StudentsCard from "../components/StudentsCard";
+import { CircularProgress } from "@mui/material";
 
 export default function Seniors() {
   const [seniors, setSeniors] = useState([]);
@@ -25,11 +26,17 @@ export default function Seniors() {
   return (
     <Fragment>
       <Header />
-      <Grid sx={{ mt: 1 }} container spacing={7} padding={5}>
-        {seniors.students?.map((student, index) => (
-          <StudentsCard student={student} index={index} />
-        ))}
-      </Grid>
+      {loading ? (
+        <Grid container justify="center" alignItems="center">
+          <CircularProgress />
+        </Grid>
+      ) : (
+        <Grid sx={{ mt: 1 }} container spacing={7} padding={5}>
+          {seniors.students?.map((student, index) => (
+            <StudentsCard student={student} index={index} />
+          ))}
+        </Grid>
+      )}
     </Fragment>
   );
 }

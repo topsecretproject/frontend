@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { doc, getDoc } from "@firebase/firestore";
 import { useState, useEffect } from "react";
@@ -39,7 +39,7 @@ export default function Student() {
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState("");
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const level = location.pathname.split("/")[1];
     const id = location.pathname.split("/")[2];
     const docRef = doc(db, "students", `${level}`);
@@ -51,11 +51,11 @@ export default function Student() {
       setStudent(data.students[id]);
     }
     setLoading(false);
-  };
+  }, [location]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   return (
     <Fragment>
