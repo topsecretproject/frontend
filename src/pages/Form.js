@@ -106,7 +106,7 @@ export default function Form() {
     {
       label: "Bio",
       question: "What is your bio?",
-      helper: "Must be minimum of 200 charaters long.",
+      helper: "Must be minimum of 200 characters long.",
       func: setBio,
     },
     {
@@ -423,10 +423,7 @@ export default function Form() {
             {isLoading === false ? (
               <FormControl
                 fullWidth
-                disabled={
-                  (skills.length === 6 || interests.length === 3) &&
-                  (currentQuestion === 9 || currentQuestion === 10)
-                }
+                // disabled={skills.length === 6 || interests.length === 3}
               >
                 {currentQuestion < 0 || currentQuestion > 12 ? (
                   <Fragment>
