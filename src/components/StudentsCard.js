@@ -10,6 +10,7 @@ import {
   Typography,
   styled,
   Paper,
+  Divider,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 
@@ -25,7 +26,7 @@ export default function StudentsCard({ student, index }) {
           sx={{
             overflow: "visible",
             border: "5px solid #1976D2",
-            height: "320px",
+            height: "350px",
           }}
         >
           <CardContent>
@@ -40,23 +41,32 @@ export default function StudentsCard({ student, index }) {
             />
             <Typography gutterBottom variant="h5" align="center">
               {student.name}
-              <hr></hr>
             </Typography>
+            <Divider
+              sx={{
+                mb: 2,
+                "&::before, &::after": {
+                  borderColor: "primary.main",
+                },
+              }}
+            >
+              <Chip label="Interests" color="primary" />
+            </Divider>
             <Paper
               elevation={2}
               sx={{
                 display: "flex",
                 flexWrap: "wrap",
                 listStyle: "none",
-                p: 0.5,
+                pt: 1.5,
+                pb: 1.5,
                 m: 0,
-                backgroundColor: "#E6E6E6",
-                height: "6rem",
+                border: "2px solid #1976D2",
               }}
               component="ul"
             >
-              {student.interests?.map((student) => (
-                <Grid item key={student.interests}>
+              {student.interests?.map((student, index) => (
+                <Grid item key={index}>
                   <ListItem key={student}>
                     <Chip
                       variant="outlined"

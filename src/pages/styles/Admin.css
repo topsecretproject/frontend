@@ -1,8 +1,6 @@
 .admin {
   position: relative;
-  background: #2b5876;
-  background: -webkit-linear-gradient(to top, #4e4376, #2b5876);
-  background: linear-gradient(to top, #4e4376, #2b5876);
+  background: #1976d2;
   height: 100vh;
   display: flex;
   flex-direction: column;

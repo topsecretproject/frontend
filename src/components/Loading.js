@@ -1,19 +1,31 @@
 import React from "react";
-import Box from "@mui/material/Box";
-import LinearProgress from "@mui/material/LinearProgress";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  CircularProgress,
+} from "@mui/material";
 
-export default function Loading() {
+export default function Loading({ text, loading }) {
   return (
-    <Box
-      sx={{
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+    <Dialog
+      open={loading}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
     >
-      <LinearProgress />
-    </Box>
+      <DialogTitle id="alert-dialog-title">{`Loading ${text}...`}</DialogTitle>
+      <DialogContent
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <DialogContentText id="alert-dialog-description">
+          <CircularProgress />
+        </DialogContentText>
+      </DialogContent>
+    </Dialog>
   );
 }

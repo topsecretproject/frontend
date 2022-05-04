@@ -19,6 +19,11 @@ import {
   CardContent,
   Typography,
   CardActions,
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import GitHubIcon from "@mui/icons-material/GitHub";
@@ -28,6 +33,7 @@ import StarIcon from "@mui/icons-material/Star";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LinkIcon from "@mui/icons-material/Link";
 import InfoIcon from "@mui/icons-material/Info";
+import EngineeringIcon from "@mui/icons-material/Engineering";
 
 const ListItem = styled("li")(({ theme }) => ({
   margin: theme.spacing(0.5),
@@ -60,9 +66,29 @@ export default function Student() {
   return (
     <Fragment>
       <Header />
-      <Box sx={{ backgroundColor: "#1976D2", p: 4, mt: -3 }}>
+      <Box
+        sx={{
+          backgroundColor: "#1976D2",
+          p: 4,
+          mt: -3,
+          position: "relative",
+        }}
+      >
         {loading ? (
-          <CircularProgress />
+          <Dialog
+            open={loading}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {"Loading Student..."}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                <CircularProgress />
+              </DialogContentText>
+            </DialogContent>
+          </Dialog>
         ) : errors !== "" ? (
           <Alert
             action={
@@ -82,6 +108,7 @@ export default function Student() {
                 alignItems: "center",
                 justifyContent: "center",
                 mb: 3,
+                mt: -4,
               }}
             >
               <Button
@@ -117,14 +144,32 @@ export default function Student() {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={8}>
-                  <Chip
-                    icon={<InfoIcon />}
-                    label="Bio"
-                    color="success"
-                    sx={{ mr: 2 }}
-                  />
+                  <Divider
+                    sx={{
+                      mb: 2,
+                      "&::before, &::after": {
+                        borderColor: "success.main",
+                      },
+                    }}
+                  >
+                    <Chip
+                      icon={<InfoIcon />}
+                      label="Bio"
+                      color="success"
+                      sx={{ mr: 2 }}
+                    />
+                  </Divider>
                   <Box>
-                    <Typography variant="body1">{student.bio}</Typography>
+                    <Typography
+                      sx={{
+                        border: "1px solid green",
+                        borderRadius: "5px",
+                        padding: "15px",
+                      }}
+                      variant="body1"
+                    >
+                      {student.bio}
+                    </Typography>
                   </Box>
                 </Grid>
               </Grid>
@@ -142,10 +187,17 @@ export default function Student() {
                     elevation={0}
                     sx={{
                       display: "flex",
-                      justifyContent: "flex-start",
+                      justifyContent: {
+                        xs: "center",
+                        sm: "center",
+                        md: "flex-start",
+                        lg: "flex-start",
+                      },
                       flexWrap: "wrap",
                       listStyle: "none",
                       m: 0,
+                      p: 0,
+                      pl: 2,
                     }}
                     component="ul"
                   >
@@ -204,10 +256,17 @@ export default function Student() {
                     elevation={0}
                     sx={{
                       display: "flex",
-                      justifyContent: "flex-start",
+                      justifyContent: {
+                        xs: "center",
+                        sm: "center",
+                        md: "flex-start",
+                        lg: "flex-start",
+                      },
                       flexWrap: "wrap",
                       listStyle: "none",
                       m: 0,
+                      p: 0,
+                      pl: 2,
                     }}
                     component="ul"
                   >
@@ -233,10 +292,17 @@ export default function Student() {
                     elevation={0}
                     sx={{
                       display: "flex",
-                      justifyContent: "flex-start",
+                      justifyContent: {
+                        xs: "center",
+                        sm: "center",
+                        md: "flex-start",
+                        lg: "flex-start",
+                      },
                       flexWrap: "wrap",
                       listStyle: "none",
                       m: 0,
+                      p: 0,
+                      pl: 2,
                     }}
                     component="ul"
                   >
@@ -249,10 +315,45 @@ export default function Student() {
                 </Grid>
               </Grid>
               <Box>
-                <Grid container spacing={2}>
+                <Divider
+                  sx={{
+                    mb: 2,
+                    "&::before, &::after": {
+                      borderColor: "warning.main",
+                    },
+                  }}
+                >
+                  <Chip
+                    icon={<EngineeringIcon />}
+                    label="Projects"
+                    color="warning"
+                    sx={{ mr: 2 }}
+                  />
+                </Divider>
+                <Grid
+                  justifyContent="center"
+                  alignItems="stretch"
+                  container
+                  spacing={2}
+                >
                   {student.projects?.map((project, index) => (
-                    <Grid key={index} item xs={12} sm={12} md={3} lg={3}>
-                      <Card>
+                    <Grid
+                      style={{ display: "flex" }}
+                      key={index}
+                      item
+                      xs={12}
+                      sm={4}
+                      md={4}
+                      lg={3}
+                    >
+                      <Card
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          flexDirection: "column",
+                        }}
+                      >
                         <CardContent>
                           <Typography sx={{ fontSize: 18 }} gutterBottom>
                             {project.name}
