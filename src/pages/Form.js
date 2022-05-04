@@ -194,7 +194,7 @@ export default function Form() {
       if (csiEmail === "") {
         setErrors("Email is required");
       } else if (
-        !/^[a-zA-Z]+.[a-zA-Z0-9]+@cix.csi.cuny.edu$/.test(
+        !/^[a-zA-Z]+\.[a-zA-Z0-9]+@cix.csi.cuny.edu$/.test(
           csiEmail.toLowerCase()
         ) &&
         level !== "Alumni"
@@ -319,6 +319,9 @@ export default function Form() {
         setErrors("Projects are required");
       } else {
         setErrors("");
+        if (level === "Junior") {
+          setProjects(projects.slice(0, 2));
+        }
         setCurrentQuestion(currentQuestion + 1);
       }
     }
