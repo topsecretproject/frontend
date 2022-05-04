@@ -108,6 +108,7 @@ export default function Queue({
                 flexWrap: "wrap",
                 listStyle: "none",
                 m: 0,
+                p: 0,
               }}
               component="ul"
             >
@@ -240,6 +241,7 @@ export default function Queue({
                 justifyContent: "flex-start",
                 flexWrap: "wrap",
                 listStyle: "none",
+                p: 0,
                 m: 0,
               }}
               component="ul"
@@ -270,6 +272,7 @@ export default function Queue({
                 flexWrap: "wrap",
                 listStyle: "none",
                 m: 0,
+                p: 0,
               }}
               component="ul"
             >
