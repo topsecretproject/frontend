@@ -26,7 +26,7 @@ export default function StudentsCard({ student, index }) {
           sx={{
             overflow: "visible",
             border: "5px solid #1976D2",
-            height: "350px",
+            height: "22.5rem",
           }}
         >
           <CardContent>
@@ -39,7 +39,12 @@ export default function StudentsCard({ student, index }) {
               }}
               src={student.imgLink}
             />
-            <Typography gutterBottom variant="h5" align="center">
+            <Typography
+              sx={{ marginTop: "15px" }}
+              gutterBottom
+              variant="h5"
+              align="center"
+            >
               {student.name}
             </Typography>
             <Divider
@@ -58,6 +63,7 @@ export default function StudentsCard({ student, index }) {
                 display: "flex",
                 flexWrap: "wrap",
                 listStyle: "none",
+                p: 0,
                 pt: 1.5,
                 pb: 1.5,
                 m: 0,
@@ -65,18 +71,20 @@ export default function StudentsCard({ student, index }) {
               }}
               component="ul"
             >
-              {student.interests?.map((student, index) => (
-                <Grid item key={index}>
-                  <ListItem key={student}>
-                    <Chip
-                      variant="outlined"
-                      color="info"
-                      size="small"
-                      label={student}
-                    />
-                  </ListItem>
-                </Grid>
-              ))}
+              <Grid container justifyContent="center">
+                {student.interests?.map((student, index) => (
+                  <Grid item key={index}>
+                    <ListItem key={student}>
+                      <Chip
+                        variant="outlined"
+                        color="info"
+                        size="small"
+                        label={student}
+                      />
+                    </ListItem>
+                  </Grid>
+                ))}
+              </Grid>
             </Paper>
           </CardContent>
           <CardActions>

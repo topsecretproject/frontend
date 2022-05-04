@@ -411,6 +411,7 @@ export default function Form() {
             overflowX: "hidden",
             overflowY: "scroll",
             alignItems: "center",
+            border: "2px solid #1976d2",
           }}
         >
           <FormGroup
