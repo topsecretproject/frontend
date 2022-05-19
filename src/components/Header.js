@@ -29,7 +29,7 @@ export default function Header({ signOut }) {
   };
 
   return (
-    <AppBar position="static" sx={{ zIndex: "100", mb: 3 }}>
+    <AppBar position="static" sx={{ zIndex: "100", width: "100vw", mb: 3 }}>
       <Toolbar>
         <Typography
           variant="h6"
@@ -39,7 +39,12 @@ export default function Header({ signOut }) {
         >
           Students Showcase
         </Typography>
-        <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: { xs: "flex", md: "none" },
+          }}
+        >
           <IconButton
             size="large"
             aria-label="account of current user"

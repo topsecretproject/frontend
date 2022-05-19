@@ -2,7 +2,7 @@ import React, { Fragment, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { doc, getDoc } from "@firebase/firestore";
 import { useState, useEffect } from "react";
-import db from "../firebase/firebase";
+import { db } from "../firebase/firebase";
 import Header from "../components/Header";
 import {
   Grid,
@@ -34,6 +34,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import LinkIcon from "@mui/icons-material/Link";
 import InfoIcon from "@mui/icons-material/Info";
 import EngineeringIcon from "@mui/icons-material/Engineering";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 
 const ListItem = styled("li")(({ theme }) => ({
   margin: theme.spacing(0.5),
@@ -51,10 +52,10 @@ export default function Student() {
     const docRef = doc(db, "students", `${level}`);
     const snapshot = await getDoc(docRef);
     const data = snapshot.data();
-    if (data.students.length - 1 < id || id < 0) {
+    if (Object.keys(data).length - 1 < id || id < 0) {
       setErrors("Invalid student ID");
     } else {
-      setStudent(data.students[id]);
+      setStudent(data[Object.keys(data)[id]] || {});
     }
     setLoading(false);
   }, [location]);
@@ -68,10 +69,10 @@ export default function Student() {
       <Header />
       <Box
         sx={{
+          minHeight: "100%",
           backgroundColor: "#1976D2",
-          p: 4,
+          p: { xs: 1, sm: 3, md: 3, lg: 3 },
           mt: -3,
-          position: "relative",
         }}
       >
         {loading ? (
@@ -102,25 +103,6 @@ export default function Student() {
           </Alert>
         ) : (
           <Fragment>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                mb: 3,
-                mt: -4,
-              }}
-            >
-              <Button
-                component={Link}
-                to="/"
-                color="error"
-                size="small"
-                variant="contained"
-              >
-                BACK
-              </Button>
-            </Box>
             <Box sx={{ backgroundColor: "white", borderRadius: "15px", p: 4 }}>
               <Grid
                 justifyContent="center"
@@ -130,20 +112,38 @@ export default function Student() {
                 mb={5}
               >
                 <Grid item xs={12} sm={4}>
-                  <Avatar
+                  <Paper
+                    elevation={3}
                     sx={{
-                      width: "11rem",
-                      height: "11rem",
-                      margin: "auto",
-                      border: "5px solid #1976D2",
+                      borderRadius: "10px",
+                      background: "#1976D2",
+                      padding: "15px",
+                      boxShadow: "0px 0px 5px #1976D2",
                     }}
-                    src={student.imgLink}
-                  />
-                  <Typography sx={{ textAlign: "center" }} variant="h4">
+                  >
+                    <Avatar
+                      sx={{
+                        width: "11rem",
+                        height: "11rem",
+                        margin: "auto",
+                        border: "2px solid white",
+                      }}
+                      src={student.imgLink}
+                    />
+                  </Paper>
+                  <Typography
+                    sx={{
+                      textAlign: "center",
+                      mt: 1,
+                      border: "2px solid #1976D2",
+                      borderRadius: "10px",
+                    }}
+                    variant="h4"
+                  >
                     {student.name}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={8}>
+                <Grid sx={{ height: "100%" }} item xs={12} sm={8}>
                   <Divider
                     sx={{
                       mb: 2,
@@ -201,6 +201,18 @@ export default function Student() {
                     }}
                     component="ul"
                   >
+                    <ListItem>
+                      <Chip
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        href={student.resume}
+                        component="a"
+                        clickable
+                        icon={<InsertDriveFileIcon />}
+                        label="Resume"
+                        disabled={!student.resume}
+                      />
+                    </ListItem>
                     <ListItem>
                       <Chip
                         rel="noopener noreferrer"
@@ -389,6 +401,25 @@ export default function Student() {
             </Box>
           </Fragment>
         )}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            mt: 2,
+          }}
+        >
+          <Button
+            component={Link}
+            to="/"
+            color="error"
+            size="small"
+            variant="contained"
+            sx={{ width: "30%" }}
+          >
+            BACK
+          </Button>
+        </Box>
       </Box>
     </Fragment>
   );

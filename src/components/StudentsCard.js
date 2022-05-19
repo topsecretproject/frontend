@@ -21,12 +21,12 @@ const ListItem = styled("li")(({ theme }) => ({
 export default function StudentsCard({ student, index }) {
   return (
     <Fragment>
-      <Grid mb={8} item xs={12} sm={12} md={4} lg={4} key={student.id}>
+      <Grid mb={8} item xs={12} sm={6} md={4} lg={3} key={student.id}>
         <Card
           sx={{
             overflow: "visible",
             border: "5px solid #1976D2",
-            height: "22.5rem",
+            height: { xs: "380px", sm: "380px", md: "370px", lg: "360px" },
           }}
         >
           <CardContent>
@@ -55,7 +55,10 @@ export default function StudentsCard({ student, index }) {
                 },
               }}
             >
-              <Chip label="Interests" color="primary" />
+              <Chip
+                label={student.level === "Alumni" ? "Company" : "Interests"}
+                color="primary"
+              />
             </Divider>
             <Paper
               elevation={2}
@@ -71,20 +74,35 @@ export default function StudentsCard({ student, index }) {
               }}
               component="ul"
             >
-              <Grid container justifyContent="center">
-                {student.interests?.map((student, index) => (
-                  <Grid item key={index}>
-                    <ListItem key={student}>
-                      <Chip
-                        variant="outlined"
-                        color="info"
-                        size="small"
-                        label={student}
-                      />
-                    </ListItem>
-                  </Grid>
-                ))}
-              </Grid>
+              {student.level === "Alumni" ? (
+                <Fragment>
+                  <ListItem>
+                    <Typography variant="body2" color="textSecondary">
+                      Company: {student.company}
+                    </Typography>
+                  </ListItem>
+                  <ListItem>
+                    <Typography variant="body2" color="textSecondary">
+                      Role: {student.role}
+                    </Typography>
+                  </ListItem>
+                </Fragment>
+              ) : (
+                <Grid container justifyContent="center">
+                  {student.interests?.map((student, index) => (
+                    <Grid item key={index}>
+                      <ListItem key={student}>
+                        <Chip
+                          variant="outlined"
+                          color="info"
+                          size="small"
+                          label={student}
+                        />
+                      </ListItem>
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
             </Paper>
           </CardContent>
           <CardActions>

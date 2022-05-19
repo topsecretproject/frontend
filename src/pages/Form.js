@@ -13,6 +13,7 @@ import {
   Alert,
   CircularProgress,
   Stack,
+  Chip,
 } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -23,10 +24,12 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import MobileStepper from "@mui/material/MobileStepper";
 import { useTheme } from "@mui/material/styles";
 import ReCAPTCHA from "react-google-recaptcha";
-import { doc, updateDoc, arrayUnion } from "firebase/firestore";
-import db from "../firebase/firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import Switch from "@mui/material/Switch";
+import { storage } from "../firebase/firebase";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 
 export default function Form() {
   const navigate = useNavigate();
@@ -50,6 +53,10 @@ export default function Form() {
   const [level, setLevel] = useState("");
   const [skills, setSkills] = useState([]);
   const [interests, setInterests] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [progresspercent, setProgresspercent] = useState(0);
+  const [resume, setResume] = useState("");
+  const [resumeName, setResumeName] = useState("");
   const [projects, setProjects] = useState([
     {
       name: "",
@@ -155,6 +162,11 @@ export default function Form() {
       depQuestion: "Is project currently deployed?",
       depFunc: setProjects,
     },
+    {
+      label: "Resume",
+      question: "What is your resume link? (Optional)",
+      helper: "Please enter a valid resume link",
+    },
   ]);
 
   const onRecaptchaChange = (value) => {
@@ -187,6 +199,9 @@ export default function Form() {
         setErrors("Level is required");
       } else {
         setErrors("");
+        if (level === "Alumni") {
+          setEmplid(Math.floor(10000000 + Math.random() * 90000000));
+        }
         setCurrentQuestion(currentQuestion + 1);
       }
     }
@@ -241,7 +256,11 @@ export default function Form() {
         setErrors("Bio must be a minimum of 200 characters");
       } else {
         setErrors("");
-        setCurrentQuestion(currentQuestion + 1);
+        if (level === "Alumni") {
+          setCurrentQuestion(currentQuestion + 2);
+        } else {
+          setCurrentQuestion(currentQuestion + 1);
+        }
       }
     }
     if (currentQuestion === 5) {
@@ -267,7 +286,11 @@ export default function Form() {
         setErrors("LinkedIn must be a valid link");
       } else {
         setErrors("");
-        setCurrentQuestion(currentQuestion + 1);
+        if (level === "Alumni") {
+          setCurrentQuestion(currentQuestion + 2);
+        } else {
+          setCurrentQuestion(currentQuestion + 1);
+        }
       }
     }
     if (currentQuestion === 7) {
@@ -288,7 +311,11 @@ export default function Form() {
         setErrors("Image Link is required");
       } else {
         setErrors("");
-        setCurrentQuestion(currentQuestion + 1);
+        if (level === "Alumni") {
+          setCurrentQuestion(currentQuestion + 5);
+        } else {
+          setCurrentQuestion(currentQuestion + 1);
+        }
       }
     }
     if (currentQuestion === 9) {
@@ -325,6 +352,14 @@ export default function Form() {
         setCurrentQuestion(currentQuestion + 1);
       }
     }
+    if (currentQuestion === 12) {
+      if (!resume) {
+        setErrors("Resume is required");
+      } else {
+        setErrors("");
+        setCurrentQuestion(currentQuestion + 1);
+      }
+    }
 
     setIsLoading(false);
     if (
@@ -334,6 +369,7 @@ export default function Form() {
         currentQuestion === -1 ||
         currentQuestion === 11 ||
         currentQuestion === 12 ||
+        currentQuestion === 13 ||
         (currentQuestion === 3 && level === "Alumni")
       )
     ) {
@@ -345,6 +381,7 @@ export default function Form() {
     csiEmail,
     emplid,
     level,
+    resume,
     company,
     role,
     bio,
@@ -366,30 +403,67 @@ export default function Form() {
     e.preventDefault();
     setIsLoading(true);
     const docRef = doc(db, "queue", "students");
-    await updateDoc(docRef, {
-      students: arrayUnion({
-        name,
-        csiEmail,
-        emplid,
-        level,
-        bio,
-        github,
-        interests,
-        skills,
-        linkedin,
-        portfolio,
-        imgLink,
-        projects,
-      }),
-    })
-      .then(() => {
-        setIsLoading(false);
-        navigate("/", { success: true });
-      })
-      .catch((err) => {
-        setErrors(err.message);
-        setIsLoading(false);
-      });
+    const storageRef = ref(storage, `/${name}/${resumeName}`);
+    const uploadTask = uploadBytesResumable(storageRef, resume);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        setProgresspercent(progress);
+      },
+      (error) => {
+        setErrors(error.message);
+      },
+      async () => {
+        await getDownloadURL(uploadTask.snapshot.ref)
+          .then((downloadURL) => {
+            if (level === "Junior" || level === "Senior") {
+              updateDoc(docRef, {
+                [emplid]: {
+                  name,
+                  csiEmail,
+                  level,
+                  emplid,
+                  resume: downloadURL,
+                  bio,
+                  github,
+                  interests,
+                  skills,
+                  linkedin,
+                  portfolio,
+                  imgLink,
+                  projects,
+                },
+              });
+            } else if (level === "Alumni") {
+              updateDoc(docRef, {
+                [emplid]: {
+                  name,
+                  csiEmail,
+                  level,
+                  emplid,
+                  company,
+                  role,
+                  bio,
+                  linkedin,
+                  imgLink,
+                  isAlumni: true,
+                },
+              });
+            }
+          })
+          .then(() => {
+            setIsLoading(false);
+            navigate("/", { success: true });
+          })
+          .catch((err) => {
+            setErrors(err.message);
+            setIsLoading(false);
+          });
+      }
+    );
   };
 
   return (
@@ -407,7 +481,7 @@ export default function Form() {
           component="form"
           elevation={2}
           sx={{
-            width: "80%",
+            width: { xs: "95%", sm: "85%", md: "80%", lg: "80%" },
             height: "85vh",
             display: "flex",
             justifyContent: "center",
@@ -428,7 +502,7 @@ export default function Form() {
           >
             {isLoading === false ? (
               <FormControl fullWidth>
-                {currentQuestion < 0 || currentQuestion > 12 ? (
+                {currentQuestion < 0 || currentQuestion > 13 ? (
                   <Fragment>
                     <Box
                       sx={{
@@ -677,6 +751,38 @@ export default function Form() {
                   <Fragment>
                     <Box
                       sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <input
+                        accept="application/pdf"
+                        style={{ display: "none" }}
+                        id="raised-button-file"
+                        multiple
+                        onChange={(e) => {
+                          setResume(e.target.files[0]);
+                          setResumeName(e.target.files[0].name?.trim());
+                        }}
+                        type="file"
+                      />
+                      <label htmlFor="raised-button-file">
+                        <Button variant="raised" component="span">
+                          Choose Resume
+                        </Button>
+                      </label>
+                      {resume ? (
+                        <Fragment>
+                          <Chip sx={{ width: "80%" }} label={resume.name} />
+                        </Fragment>
+                      ) : undefined}
+                    </Box>
+                  </Fragment>
+                ) : currentQuestion === 13 ? (
+                  <Fragment>
+                    <Box
+                      sx={{
                         textAlign: "center",
                         display: "flex",
                         justifyContent: "center",
@@ -753,21 +859,6 @@ export default function Form() {
                   </Fragment>
                 ) : (
                   <Fragment>
-                    <Box
-                      sx={{
-                        display: {
-                          xs: "block",
-                          sm: "block",
-                          md: "none",
-                          lg: "none",
-                          xlg: "none",
-                        },
-                      }}
-                    >
-                      <InputLabel shrink={true}>
-                        {questions[currentQuestion].question}
-                      </InputLabel>
-                    </Box>
                     {imgLink !== "" ? (
                       <Box sx={{ display: "flex", justifyContent: "center" }}>
                         <Avatar
@@ -789,7 +880,7 @@ export default function Form() {
                         currentQuestion === 2
                           ? level === "Alumni"
                             ? questions[currentQuestion].aQuestion
-                            : questions[currentQuestion].aQuestion
+                            : questions[currentQuestion].helper
                           : questions[currentQuestion].question
                       }
                       placeholder={
@@ -804,7 +895,7 @@ export default function Form() {
                       InputLabelProps={{ shrink: true }}
                       error={errors !== ""}
                       inputRef={textInput}
-                      multiline={currentQuestion === 4}
+                      multiline
                       onChange={(e) =>
                         questions[currentQuestion].func(e.target.value.trim())
                       }
@@ -813,7 +904,7 @@ export default function Form() {
                       {currentQuestion === 2
                         ? level === "Alumni"
                           ? questions[currentQuestion].aQuestion
-                          : questions[currentQuestion].aQuestion
+                          : questions[currentQuestion].helper
                         : questions[currentQuestion].question}
                     </FormHelperText>
                   </Fragment>
@@ -845,7 +936,7 @@ export default function Form() {
                   <Button
                     size="small"
                     onClick={onNext}
-                    disabled={currentQuestion === 12}
+                    disabled={currentQuestion === 13}
                   >
                     Next
                     {theme.direction === "rtl" ? (
@@ -862,7 +953,7 @@ export default function Form() {
                     disabled={
                       currentQuestion === -1 ||
                       currentQuestion === 0 ||
-                      currentQuestion === 12
+                      currentQuestion === 13
                     }
                   >
                     {theme.direction === "rtl" ? (

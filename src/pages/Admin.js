@@ -15,14 +15,9 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-} from "@firebase/firestore";
-import db from "../firebase/firebase";
+import { doc, getDoc, updateDoc, deleteField } from "@firebase/firestore";
+import { getStorage, ref, deleteObject } from "firebase/storage";
+import { db } from "../firebase/firebase";
 import "./styles/Admin.css";
 import Header from "../components/Header";
 import Queue from "../components/Queue";
@@ -69,34 +64,45 @@ export default function Admin() {
 
   const onApprove = async (id) => {
     const queueRef = doc(db, "queue", "students");
-    if (queues.students[id].level === "Junior") {
+    if (queues[id].level === "Junior") {
       const juniorRef = doc(db, "students", "juniors");
       await updateDoc(juniorRef, {
-        students: arrayUnion(queues.students[id]),
+        [id]: queues[id],
       });
     }
-    if (queues.students[id].level === "Senior") {
+    if (queues[id].level === "Senior") {
       const seniorRef = doc(db, "students", "seniors");
       await updateDoc(seniorRef, {
-        students: arrayUnion(queues.students[id]),
+        [id]: queues[id],
       });
     }
-    if (queues.students[id].level === "Alumni") {
+    if (queues[id].level === "Alumni") {
       const alumniRef = doc(db, "students", "alumni");
       await updateDoc(alumniRef, {
-        students: arrayUnion(queues.students[id]),
+        [id]: queues[id],
       });
     }
     await updateDoc(queueRef, {
-      students: arrayRemove(queues.students[id]),
+      [id]: deleteField(),
     });
     window.location.reload();
   };
 
   const onDecline = async (id) => {
+    if (queues[id].level !== "Alumni") {
+      const storage = getStorage();
+      const desertRef = ref(storage, `/${queues[id].name}/Resume.pdf`);
+      deleteObject(desertRef)
+        .then(() => {
+          console.log("deleted");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
     const queueRef = doc(db, "queue", "students");
     await updateDoc(queueRef, {
-      students: arrayRemove(queues.students[id]),
+      [id]: deleteField(),
     });
     window.location.reload();
   };
@@ -202,10 +208,12 @@ export default function Admin() {
                 }}
               >
                 {isLoading === true ? (
-                  <CircularProgress />
+                  <Box sx={{ display: "flex", justifyContent: "center" }}>
+                    <CircularProgress />
+                  </Box>
                 ) : (
                   <Fragment>
-                    {queues.students.length === 0 ? (
+                    {Object.keys(queues).length === 0 ? (
                       <Box
                         sx={{
                           marginTop: "10px",
@@ -214,13 +222,17 @@ export default function Admin() {
                           textAlign: "center",
                         }}
                       >
-                        <Typography variant="h5" gutterBottom>
+                        <Typography
+                          textAlign="center"
+                          variant="h5"
+                          gutterBottom
+                        >
                           No Students in Queue
                         </Typography>
                       </Box>
                     ) : (
                       <Fragment>
-                        {queues.students?.map((queue, index) => (
+                        {Object.keys(queues)?.map((queue, index) => (
                           <Queue
                             expanded={expanded}
                             onApprove={onApprove}
@@ -228,18 +240,19 @@ export default function Admin() {
                             handleExpand={handleExpand}
                             key={index}
                             id={index}
-                            csiEmail={queue.csiEmail}
-                            linkedin={queue.linkedin}
-                            portfolio={queue.portfolio}
-                            github={queue.github}
-                            emplid={queue.emplid}
-                            name={queue.name}
-                            bio={queue.bio}
-                            imgLink={queue.imgLink}
-                            level={queue.level}
-                            projects={queue.projects}
-                            skills={queue.skills}
-                            interests={queue.interests}
+                            resume={queues[queue].resume}
+                            csiEmail={queues[queue].csiEmail}
+                            linkedin={queues[queue].linkedin}
+                            portfolio={queues[queue].portfolio}
+                            github={queues[queue].github}
+                            emplid={queues[queue].emplid}
+                            name={queues[queue].name}
+                            bio={queues[queue].bio}
+                            imgLink={queues[queue].imgLink}
+                            level={queues[queue].level}
+                            projects={queues[queue].projects}
+                            skills={queues[queue].skills}
+                            interests={queues[queue].interests}
                           />
                         ))}
                       </Fragment>

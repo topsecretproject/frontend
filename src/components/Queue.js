@@ -20,6 +20,7 @@ import StarIcon from "@mui/icons-material/Star";
 import EngineeringIcon from "@mui/icons-material/Engineering";
 import SettingsIcon from "@mui/icons-material/Settings";
 import InfoIcon from "@mui/icons-material/Info";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import { styled } from "@mui/material/styles";
 import { Button, Chip, Grid, Avatar, Paper, Box } from "@mui/material";
 
@@ -48,6 +49,7 @@ export default function Queue({
   name,
   level,
   bio,
+  resume,
   emplid,
   imgLink,
   skills,
@@ -112,6 +114,18 @@ export default function Queue({
               }}
               component="ul"
             >
+              <ListItem>
+                <Chip
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  href={resume}
+                  component="a"
+                  clickable
+                  icon={<InsertDriveFileIcon />}
+                  label="Resume"
+                  disabled={!resume}
+                />
+              </ListItem>
               <ListItem>
                 <Chip
                   rel="noopener noreferrer"
@@ -287,7 +301,7 @@ export default function Queue({
       </AccordionDetails>
       <AccordionActions>
         <Button
-          onClick={() => onApprove(id)}
+          onClick={() => onApprove(emplid)}
           variant="contained"
           color="success"
         >
@@ -318,7 +332,7 @@ export default function Queue({
               Are you sure you want to decline this student?
             </Typography>
             <Button
-              onClick={() => onDecline(id)}
+              onClick={() => onDecline(emplid)}
               varaint="contained"
               color="error"
             >
@@ -343,6 +357,7 @@ Queue.propTypes = {
   onApprove: PropTypes.func.isRequired,
   csiEmail: PropTypes.string.isRequired,
   portfolio: PropTypes.string,
+  resume: PropTypes.string.isRequired,
   linkedin: PropTypes.string.isRequired,
   github: PropTypes.string.isRequired,
   expanded: PropTypes.string.isRequired,

@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { doc, getDoc } from "@firebase/firestore";
 import { useState, useEffect } from "react";
-import db from "../firebase/firebase";
+import { db } from "../firebase/firebase";
 import Header from "../components/Header";
 import { Grid } from "@mui/material";
 import StudentsCard from "../components/StudentsCard";
@@ -30,8 +30,12 @@ export default function Seniors() {
         <Loading loading={loading} text="Seniors" />
       ) : (
         <Grid sx={{ mt: 1 }} container spacing={7} padding={5}>
-          {seniors.students?.map((student, index) => (
-            <StudentsCard key={index} student={student} index={index} />
+          {Object.keys(seniors)?.map((student, index) => (
+            <StudentsCard
+              key={index}
+              student={seniors[student]}
+              index={index}
+            />
           ))}
         </Grid>
       )}
