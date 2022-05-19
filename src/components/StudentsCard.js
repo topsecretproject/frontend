@@ -27,6 +27,7 @@ export default function StudentsCard({ student, index }) {
             overflow: "visible",
             border: "5px solid #1976D2",
             height: { xs: "380px", sm: "380px", md: "370px", lg: "360px" },
+            position: "relative",
           }}
         >
           <CardContent>
@@ -56,7 +57,9 @@ export default function StudentsCard({ student, index }) {
               }}
             >
               <Chip
-                label={student.level === "Alumni" ? "Company" : "Interests"}
+                label={
+                  student.level === "Alumni" ? "Company & Role" : "Interests"
+                }
                 color="primary"
               />
             </Divider>
@@ -77,13 +80,11 @@ export default function StudentsCard({ student, index }) {
               {student.level === "Alumni" ? (
                 <Fragment>
                   <ListItem>
-                    <Typography variant="body2" color="textSecondary">
-                      Company: {student.company}
-                    </Typography>
+                    <Chip label={student.company} />
                   </ListItem>
                   <ListItem>
                     <Typography variant="body2" color="textSecondary">
-                      Role: {student.role}
+                      <Chip label={student.role} />
                     </Typography>
                   </ListItem>
                 </Fragment>
@@ -105,7 +106,7 @@ export default function StudentsCard({ student, index }) {
               )}
             </Paper>
           </CardContent>
-          <CardActions>
+          <CardActions sx={{ position: "absolute", bottom: "0px" }}>
             <Button
               variant="contained"
               component={Link}

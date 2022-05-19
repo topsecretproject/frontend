@@ -31,7 +31,11 @@ export default function Juniors() {
           <Loading loading={loading} text="Seniors" />
         </Grid>
       ) : (
-        <Grid sx={{ mt: 1 }} container spacing={7} padding={5}>
+        <Grid
+          sx={{ mt: 1, padding: { xs: 1, sm: 2, md: 3, lg: 3 } }}
+          container
+          spacing={7}
+        >
           {Object.keys(juniors)?.map((student, index) => (
             <StudentsCard
               key={index}

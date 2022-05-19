@@ -403,7 +403,7 @@ export default function Form() {
     e.preventDefault();
     setIsLoading(true);
     const docRef = doc(db, "queue", "students");
-    const storageRef = ref(storage, `/${name}/${resumeName}`);
+    const storageRef = ref(storage, `/${emplid}/${resumeName}`);
     const uploadTask = uploadBytesResumable(storageRef, resume);
     uploadTask.on(
       "state_changed",
