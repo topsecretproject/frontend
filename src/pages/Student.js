@@ -69,10 +69,10 @@ export default function Student() {
       <Header />
       <Box
         sx={{
-          minHeight: "100%",
+          minHeight: "90vh",
           backgroundColor: "#1976D2",
-          p: { xs: 1, sm: 3, md: 3, lg: 3 },
-          mt: -3,
+          pl: { xs: 1, sm: 3, md: 3, lg: 3 },
+          pr: { xs: 1, sm: 3, md: 3, lg: 3 },
         }}
       >
         {loading ? (
@@ -203,6 +203,7 @@ export default function Student() {
                   >
                     <ListItem>
                       <Chip
+                        color="warning"
                         rel="noopener noreferrer"
                         target="_blank"
                         href={student.resume}
@@ -215,6 +216,7 @@ export default function Student() {
                     </ListItem>
                     <ListItem>
                       <Chip
+                        color="primary"
                         rel="noopener noreferrer"
                         target="_blank"
                         href={student.linkedin}
@@ -227,6 +229,7 @@ export default function Student() {
                     </ListItem>
                     <ListItem>
                       <Chip
+                        color="secondary"
                         rel="noopener noreferrer"
                         target="_blank"
                         href={student.github}
@@ -239,6 +242,7 @@ export default function Student() {
                     </ListItem>
                     <ListItem>
                       <Chip
+                        color="error"
                         rel="noopener noreferrer"
                         target="_blank"
                         href={student.portfolio}
@@ -407,6 +411,7 @@ export default function Student() {
             alignItems: "center",
             justifyContent: "center",
             mt: 2,
+            pb: 2,
           }}
         >
           <Button

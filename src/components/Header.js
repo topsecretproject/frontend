@@ -29,7 +29,10 @@ export default function Header({ signOut }) {
   };
 
   return (
-    <AppBar position="static" sx={{ zIndex: "100", width: "100vw", mb: 3 }}>
+    <AppBar
+      position="static"
+      sx={{ zIndex: "100", width: "100vw", height: "10vh" }}
+    >
       <Toolbar>
         <Typography
           variant="h6"

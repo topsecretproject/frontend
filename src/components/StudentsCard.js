@@ -110,7 +110,9 @@ export default function StudentsCard({ student, index }) {
             <Button
               variant="contained"
               component={Link}
-              to={`/${student.level.toLowerCase()}s/${index}`}
+              to={`/${student.level.toLowerCase()}${
+                student.level !== "Alumni" ? "s" : ""
+              }/${index}`}
             >
               View Profile
             </Button>

@@ -30,7 +30,11 @@ export default function Alumni() {
           <Loading loading={loading} text="Seniors" />
         </Grid>
       ) : (
-        <Grid sx={{ mt: 1 }} container spacing={7} padding={5}>
+        <Grid
+          sx={{ mt: 3, padding: { xs: 2, sm: 3, md: 4, lg: 4 } }}
+          container
+          spacing={7}
+        >
           {Object.keys(alumni)?.map((alum, index) => (
             <StudentsCard key={index} student={alumni[alum]} index={index} />
           ))}
